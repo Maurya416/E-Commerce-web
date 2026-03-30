@@ -142,8 +142,8 @@ function BlogHero() {
               What Coal Tar Is and How It Works on the Scalp
             </h2>
 
-            <div className="mt-8 flex justify-center md:mt-10">
-              <div className="w-full max-w-[620px] overflow-hidden">
+            <div className="mt-8 flex justify-center md:mt-7">
+              <div className="w-full max-w-[500px] overflow-hidden">
                 <img
                   src="/src/assets/images/blogs\und.webp"
                   alt="Coal Tar and Scalp Care"
@@ -170,24 +170,24 @@ function BlogHero() {
 
             <ul className="mt-5 text-[16px] leading-8 text-[#20222c] md:mt-8 md:text-[19px] md:leading-10 xl:text-[21px] xl:leading-[50px]">
               <li className="flex items-start gap-3">
-                <span className="mt-5 h-2 w-2 shrink-0 bg-[#20222c]" />
+                <span className="mt-3 h-2 w-2 rounded-full md:mt-5 shrink-0 bg-[#20222c]" />
                 <span>A dark, thick product obtained in coal processing</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="mt-5 h-2 w-2 shrink-0 bg-[#20222c]" />
+                <span className="mt-3 h-2 w-2 rounded-full md:mt-5 shrink-0 bg-[#20222c]" />
                 <span>
                   Long used in medical shampoos and scalp preparations
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="mt-5 h-2 w-2 shrink-0 bg-[#20222c]" />
+                <span className="mt-3 h-2 w-2 rounded-full md:mt-5 shrink-0 bg-[#20222c]" />
                 <span>
                   Known as an antidotes/dermato-vegetable preparation, with
                   properties
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="mt-5 h-2 w-2 shrink-0 bg-[#20222c]" />
+                <span className="mt-3 h-2 w-2 rounded-full md:mt-5 shrink-0 bg-[#20222c]" />
                 <span>
                   Formulations available over-the-counter and by prescription
                   only
@@ -201,25 +201,25 @@ function BlogHero() {
 
             <ul className="mt-8  text-md leading-8 text-[#20222c] md:mt-5 md:text-xl md:leading-[50px]">
               <li className="flex items-start gap-3">
-                <span className="mt-5 h-2 w-2 shrink-0 bg-[#20222c]" />
+                <span className="mt-3 h-2 w-2 rounded-full md:mt-5 shrink-0 bg-[#20222c]" />
                 <span>
                   Controls excessive growth of skin cells, a major contributor to
                   flakes in psoriasis
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="mt-5 h-2 w-2 shrink-0 bg-[#20222c]" />
+                <span className="mt-3 h-2 w-2 rounded-full md:mt-5 shrink-0 bg-[#20222c]" />
                 <span>Helps to reduce the scaling associated with dandruff</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="mt-5 h-2 w-2 shrink-0 bg-[#20222c]" />
+                <span className="mt-3 h-2 w-2 rounded-full md:mt-5 shrink-0 bg-[#20222c]" />
                 <span>
                   Relieves itching and scales associated with dandruff and{" "}
                   <span className="font-semibold text-[#8b5cf6]">eczema</span>
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="mt-5 h-2 w-2 shrink-0 bg-[#20222c]" />
+                <span className="mt-3 h-2 w-2 rounded-full md:mt-5 shrink-0 bg-[#20222c]" />
                 <span>
                   Softens thick plaques and makes them easier to remove with soap
                 </span>
@@ -235,15 +235,15 @@ function BlogHero() {
 
             <ul className="mt-8  text-md leading-8 text-[#20222c] md:mt-8 md:text-xl md:leading-[50px]">
               <li className="flex items-start gap-3">
-                <span className="mt-5 h-2 w-2 shrink-0 bg-[#20222c]" />
+                <span className="mt-3 h-2 w-2 rounded-full md:mt-5 shrink-0 bg-[#20222c]" />
                 <span>Proven clinically for scalp psoriasis treatment</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="mt-5 h-2 w-2 shrink-0 bg-[#20222c]" />
+                <span className="mt-3 h-2 w-2 rounded-full md:mt-5 shrink-0 bg-[#20222c]" />
                 <span>Assists in managing chronic dandruff effectively</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="mt-5 h-2 w-2 shrink-0 bg-[#20222c]" />
+                <span className="mt-3 h-2 w-2 rounded-full md:mt-5 shrink-0 bg-[#20222c]" />
                 <span>
                   Recommended by dermatologists for maintenance of the scalp
                 </span>
