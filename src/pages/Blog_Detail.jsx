@@ -1,11 +1,4 @@
 import React from "react";
-import {
-  FaFacebookF,
-  FaLinkedinIn,
-  FaTwitter,
-  FaShare,
-} from "react-icons/fa";
-import { MessageCircle } from "lucide-react";
 import blogImg1 from '/src/assets/images/blogs/next1.avif'
 import blogImg2 from '/src/assets/images/blogs/next2.avif'
 import SectionTitle from '../components/SectionTitle'
@@ -120,7 +113,7 @@ function BlogHero() {
               Understanding Coal Tar in Haircare
             </h2>
 
-            <p className="mt-5 text-[16px] leading-8 text-black md:text-xl md:leading-[50px]">
+            <p className="mt-5 text-[16px] text-black md:text-xl md:leading-loose">
               Coal tar has been a trusted component in hair products,
               particularly in the treatment and management of scaling
               conditions on the scalp, including dandruff, psoriasis, and{" "}
@@ -162,7 +155,7 @@ function BlogHero() {
 
           {/* BLOCK 3 */}
           <div className="mx-auto mt-10 max-w-3xl md:mt-10">
-            <p className="text-ms leading-8 text-[#20222c] md:text-xl md:leading-[50px]">
+            <p className="text-ms leading-8 text-[#20222c] md:text-xl md:leading-loose">
               Coal tar is one of the long-established ingredients suggested for
               use by dermatologists, now found in most medicated shampoos for
               scalp, specifically for{" "}
@@ -257,7 +250,7 @@ function BlogHero() {
               </li>
             </ul>
 
-            <p className="mt-8 text-[16px] leading-8 text-[#20222c] md:mt-10 md:text-[19px] md:leading-10 xl:text-[21px] xl:leading-[52px]">
+            <p className="mt-8 text-[16px] leading-8 text-[#20222c] md:mt-10 md:text-[19px] md:leading-loose">
               In conclusion, coal tar offers a proven and very effective remedy
               for scalp conditions. Even if this remedy may not offer anything
               particularly novel or exciting within the realm of haircare, its
