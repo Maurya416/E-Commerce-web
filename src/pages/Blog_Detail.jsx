@@ -59,7 +59,7 @@ function BlogHero() {
           {/* RIGHT IMAGE */}
           <div className="w-full h-[260px] sm:h-[300px] md:h-[340px] lg:h-full overflow-hidden pr-7">
             <img
-              src="/src/assets/images/blogs/img2.avif" // 👈 apni image
+              src="/src/assets/images/blogs/img1.avif"
               alt="Haircare"
               className="w-full h-full object-contain"
             />
@@ -71,73 +71,40 @@ function BlogHero() {
 
 
       <section className="w-full bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-10">
 
-          <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-10">
+          {/* FULL WIDTH CONTENT */}
+          <div>
 
-            {/* LEFT SIDEBAR */}
-            <div className="text-sm text-gray-600 space-y-6">
-
-              <div className="h-[1px] w-16 bg-gray-300 mb-4" />
-
-              <p className="text-gray-800 font-medium">By Doctor’s Desk</p>
-
-              <p>Jan 7, 2026</p>
-
-              <div className="flex items-center gap-2 text-gray-600">
-                <MessageCircle className="w-4 h-4" />
-                <span className="underline cursor-pointer">
-                  0 comments
-                </span>
-              </div>
-
-              <div>
-                <p className="mb-3 text-gray-800 font-medium">Share</p>
-
-                <div className="flex items-center gap-4">
-                  <FaFacebookF className="w-4 h-4 cursor-pointer hover:text-black" />
-                  <FaTwitter className="w-4 h-4 cursor-pointer hover:text-black" />
-                  <FaLinkedinIn className="w-4 h-4 cursor-pointer hover:text-black" />
-                  <FaShare className="w-4 h-4 cursor-pointer hover:text-black" />
-                </div>
-              </div>
-
+            {/* TAGS */}
+            <div className="flex flex-wrap gap-x-4 gap-y-2 mb-6 md:text-xl text-sm text-purple-500 font-normal">
+              <span>Coal Tar and Scalp</span>
+              <span>|</span>
+              <span>Busting Myths</span>
+              <span>|</span>
+              <span>Comparing Coal Tar Shampoos & Others</span>
+              <span>|</span>
+              <span>Uses of Coal Tar for Scalp Health</span>
+              <span>|</span>
+              <span>Side Effects & Safety Considerations of Coal Tar</span>
+              <span>|</span>
+              <span>FAQs</span>
             </div>
 
-            {/* RIGHT CONTENT */}
-            <div>
-
-              {/* TAGS */}
-              <div className="flex flex-wrap gap-x-4 gap-y-2 mb-6 text-purple-500 font-medium">
-                <span>Coal Tar and Scalp</span>
-                <span>|</span>
-                <span>Busting Myths</span>
-                <span>|</span>
-                <span>Comparing Coal Tar Shampoos & Others</span>
-                <span>|</span>
-                <span>Uses of Coal Tar for Scalp Health</span>
-                <span>|</span>
-                <span>Side Effects & Safety Considerations of Coal Tar</span>
-                <span>|</span>
-                <span>FAQs</span>
-              </div>
-
-              {/* PARAGRAPH */}
-              <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
-                Coal tar in beauty products is still a hot topic that raises
-                several doubts and misconceptions about the safety and efficiency
-                of using this ingredient for scalp and hair care. Being widely
-                available in coal tar shampoo formulations on the market, the role
-                of this ingredient is most recognized for treating several scalp
-                issues such as dandruff, scalp psoriasis, seborrheic dermatitis,
-                and itch scalps. However, besides the various known advantages
-                that these ingredients have already proven for scalp and skin
-                ailments, there are also several misconceptions that surround the
-                topic of using these ingredients for your scalp and hair care
-                needs.
-              </p>
-
-            </div>
+            {/* PARAGRAPH */}
+            <p className="text-gray-700 leading-loose text-base md:text-xl">
+              Coal tar in beauty products is still a hot topic that raises
+              several doubts and misconceptions about the safety and efficiency
+              of using this ingredient for scalp and hair care. Being widely
+              available in coal tar shampoo formulations on the market, the role
+              of this ingredient is most recognized for treating several scalp
+              issues such as dandruff, scalp psoriasis, seborrheic dermatitis,
+              and itch scalps. However, besides the various known advantages
+              that these ingredients have already proven for scalp and skin
+              ailments, there are also several misconceptions that surround the
+              topic of using these ingredients for your scalp and hair care
+              needs.
+            </p>
 
           </div>
 
@@ -145,7 +112,7 @@ function BlogHero() {
       </section>
 
 
-      <section className="w-full py-10 md:py-10">
+      <section className="w-full py-5 md:py-7">
         <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 md:px-8">
           {/* BLOCK 1 */}
           <div className="mx-auto max-w-3xl">
@@ -303,7 +270,7 @@ function BlogHero() {
       </section>
 
 
-         {/* ===== FROM THE DOCTOR'S DESK ===== */}
+      {/* ===== FROM THE DOCTOR'S DESK ===== */}
       <section className="py-10">
         <div className=" px-8">
           {/* TOP HEADER */}
@@ -320,8 +287,8 @@ function BlogHero() {
             {/* LEFT BIG CARDS */}
             <div className="grid gap-6 md:grid-cols-2">
               {/* CARD 1 */}
-              <article 
-              className="overflow-hidden rounded-lg border border-[#e5e7eb] bg-white">
+              <article
+                className="overflow-hidden rounded-lg border border-[#e5e7eb] bg-white">
                 <div className="h-[200px] w-full overflow-hidden">
                   <img
                     src={blogImg1}
@@ -351,8 +318,8 @@ function BlogHero() {
               </article>
 
               {/* CARD 2 */}
-              <article 
-              className="overflow-hidden rounded-lg border border-[#e5e7eb] bg-white">
+              <article
+                className="overflow-hidden rounded-lg border border-[#e5e7eb] bg-white">
                 <div className="h-[200px] w-full overflow-hidden">
                   <img
                     src={blogImg2}
@@ -426,38 +393,38 @@ function BlogHero() {
       </section>
 
 
-        <section className="w-full py-2">
-                      <div className="px-4 sm:px-6 lg:px-8">
-                          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                              {features.map((item, index) => (
-                                  <div
-                                      key={item.id}
-                                      className={`
+      <section className="w-full py-2">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {features.map((item, index) => (
+              <div
+                key={item.id}
+                className={`
                       flex items-center gap-3 md:gap-4 px-3 md:px-3 py-4 md:py-2 border border-gray-300 rounded-lg
                       ${index !== features.length - 1}
                     `}
-                                  >
-                                      <div className="shrink-0">
-                                          <img
-                                              src={item.image}
-                                              alt={item.title}
-                                              className="h-14 w-14 sm:w-16 md:h-16 md:w-20 object-contain"
-                                          />
-                                      </div>
-      
-                                      <div className="min-w-0">
-                                          <h3 className="text-sm sm:text-base md:text-[18px] font-semibold text-[#222] leading-tight">
-                                              {item.title}
-                                          </h3>
-                                          <p className="mt-1 text-xs sm:text-sm md:text-[15px] text-[#8d93a6] leading-tight">
-                                              {item.subtitle}
-                                          </p>
-                                      </div>
-                                  </div>
-                              ))}
-                          </div>
-                      </div>
-                  </section>
+              >
+                <div className="shrink-0">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="h-14 w-14 sm:w-16 md:h-16 md:w-20 object-contain"
+                  />
+                </div>
+
+                <div className="min-w-0">
+                  <h3 className="text-sm sm:text-base md:text-[18px] font-semibold text-[#222] leading-tight">
+                    {item.title}
+                  </h3>
+                  <p className="mt-1 text-xs sm:text-sm md:text-[15px] text-[#8d93a6] leading-tight">
+                    {item.subtitle}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
