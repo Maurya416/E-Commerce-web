@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef, } from "react";
-import { useParams } from "react-router-dom";
-import { productDetailsData, features, betterResultsProducts, productFaqs, featuredInData, productQuestions, productReviews } from "../assets/data/homeData";
+import { useParams, useNavigate } from "react-router-dom";
+import { fetchApi } from "../api/client.js";
 import {
     Check,
     CheckCircle,
@@ -29,26 +29,46 @@ import offer3 from "../assets/images/details/free.avif";
 import offer4 from "../assets/images/details/icon_1e044234-7684-4237-866b-dc649f7bd04c.avif";
 
 function Details() {
-    const { id } = useParams();
+    const { slug } = useParams();
+    const slugResolved = slug || "accare-foaming-face-wash";
+    const [product, setProduct] = useState(null);
+    const [loadError, setLoadError] = useState(null);
 
-    const product = useMemo(() => {
-        return (
-            productDetailsData.find((item) => String(item.id) === String(id)) ||
-            productDetailsData[0]
-        );
-    }, [id]);
+    useEffect(() => {
+        let cancelled = false;
+        setLoadError(null);
+        fetchApi(`/api/products/${encodeURIComponent(slugResolved)}`)
+            .then((data) => {
+                if (!cancelled) setProduct(data);
+            })
+            .catch((e) => {
+                if (!cancelled) setLoadError(e.message);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [slugResolved]);
 
-    const [selectedImage, setSelectedImage] = useState(product.gallery[0]);
-    const [qty, setQty] = useState(product.quantity || 1);
-    const [selectedSize] = useState(product.size);
+    const [selectedImage, setSelectedImage] = useState("");
+    useEffect(() => {
+        if (product?.gallery?.[0]) setSelectedImage(product.gallery[0]);
+    }, [product]);
+
+    const [qty, setQty] = useState(1);
+    useEffect(() => {
+        if (product?.quantity != null) setQty(product.quantity);
+    }, [product]);
+
     const [pincode, setPincode] = useState("");
     const [activeOffer, setActiveOffer] = useState(0);
 
     const offerImages = [offer1, offer2, offer3, offer4];
 
-    const currentImageIndex = product.gallery.findIndex(
-        (img) => img === selectedImage
-    );
+    const currentImageIndex = useMemo(() => {
+        if (!product?.gallery?.length) return 0;
+        const i = product.gallery.findIndex((img) => img === selectedImage);
+        return i < 0 ? 0 : i;
+    }, [product, selectedImage]);
 
     const decreaseQty = () => {
         setQty((prev) => (prev > 1 ? prev - 1 : 1));
@@ -59,12 +79,14 @@ function Details() {
     };
 
     const showPrevImage = () => {
+        if (!product?.gallery?.length) return;
         const prevIndex =
             currentImageIndex === 0 ? product.gallery.length - 1 : currentImageIndex - 1;
         setSelectedImage(product.gallery[prevIndex]);
     };
 
     const showNextImage = () => {
+        if (!product?.gallery?.length) return;
         const nextIndex =
             currentImageIndex === product.gallery.length - 1 ? 0 : currentImageIndex + 1;
         setSelectedImage(product.gallery[nextIndex]);
@@ -103,12 +125,12 @@ function Details() {
     };
 
 
-    const sliderRef = (null);
+    const sliderRef = useRef(null);
 
 
 
-    const reviewCount = 5,
-        questionCount = 4;
+    const reviewCount = product?.productReviews?.length ?? 0;
+    const questionCount = product?.productQuestions?.length ?? 0;
     const [activeTab, setActiveTab] = useState("reviews");
 
 
@@ -142,25 +164,25 @@ function Details() {
         return () => window.removeEventListener("resize", updateSlidesToShow);
     }, []);
 
-    const maxIndex = Math.max(featuredInData.length - slidesToShow, 0);
-
+    const pressLogos = product?.featuredInData ?? [];
+    const maxIndex = Math.max(pressLogos.length - slidesToShow, 0);
 
     useEffect(() => {
-        if (!featuredInData.length) return;
+        if (!pressLogos.length) return;
 
         intervalRef.current = setInterval(() => {
             setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
         }, 2500);
 
         return () => clearInterval(intervalRef.current);
-    }, [featuredInData.length, maxIndex]);
+    }, [pressLogos.length, maxIndex]);
 
     const pauseAutoSlide = () => {
         if (intervalRef.current) clearInterval(intervalRef.current);
     };
 
     const resumeAutoSlide = () => {
-        if (!featuredInData.length) return;
+        if (!pressLogos.length) return;
 
         clearInterval(intervalRef.current);
         intervalRef.current = setInterval(() => {
@@ -305,7 +327,10 @@ function Details() {
 
 
     const { addToCart } = useCart();
+    const navigate = useNavigate();
+
     const handleAddToCart = () => {
+        if (!product) return;
         addToCart({
             id: product.id,
             name: product.name,
@@ -314,8 +339,28 @@ function Details() {
         });
     };
 
+    const handleBuyNow = async () => {
+        if (!product) return;
+        await addToCart({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.gallery?.[0] || product.image,
+        });
+        navigate("/checkout");
+    };
+
+    if (loadError) {
+        return (
+            <div className="p-8 text-center text-red-600">{loadError}</div>
+        );
+    }
+    if (!product) {
+        return <div className="p-8 text-center text-gray-600">Loading…</div>;
+    }
+
     return (
-        <div className="bg-whiite">
+        <div className="bg-white">
             <section className="bg-[#f3f4f6] py-3 sm:py-6 lg:py-8">
                 <div className="px-3 md:px-6 lg:px-12">
                     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[54%_46%] xl:gap-8">
@@ -497,7 +542,7 @@ function Details() {
                                         </p>
 
                                         <button className="rounded-lg border border-[#8b3dff] bg-white px-2 py-1 text-[16px] font-normal text-black transition hover:bg-[#faf5ff] sm:px-2 sm:py-1 sm:text-2xl">
-                                            {selectedSize}
+                                            {product?.size}
                                         </button>
                                     </div>
 
@@ -548,7 +593,9 @@ function Details() {
                                         Add to cart
                                     </button>
 
-                                    <button className="flex h-[48px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#a855f7] to-[#7c3aed] px-3 text-[16px] font-semibold text-white">
+                                    <button 
+                                        onClick={handleBuyNow}
+                                        className="flex h-[48px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#a855f7] to-[#7c3aed] px-3 text-[16px] font-semibold text-white">
                                         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#8b3dff]">
                                             <Zap className="h-4 w-4 fill-current" />
                                         </span>
@@ -674,7 +721,9 @@ function Details() {
                                         Add to cart
                                     </button>
 
-                                    <button className="flex h-[50px] w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#a855f7] to-[#7c3aed] text-xl font-semibold text-white transition hover:opacity-95 xl:flex-1">
+                                    <button 
+                                        onClick={handleBuyNow}
+                                        className="flex h-[50px] w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#a855f7] to-[#7c3aed] text-xl font-semibold text-white transition hover:opacity-95 xl:flex-1 cursor-pointer">
                                         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#8b3dff]">
                                             <Zap className="h-6 w-6 fill-current" />
                                         </span>
@@ -814,7 +863,7 @@ function Details() {
 
                         {/* RIGHT SIDE */}
                         <div className="hidden md:grid md:grid-cols-2 gap-4">
-                            {betterResultsProducts.slice(0, 2).map((item) => (
+                            {product.betterResultsProducts.slice(0, 2).map((item) => (
                                 <div
                                     key={item.id}
                                     className="rounded-lg bg-white shadow-lg w-60 h-80 p-2"
@@ -922,12 +971,12 @@ function Details() {
             <section className="w-full py-10">
                 <div className="px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        {features.map((item, index) => (
+                        {product.features.map((item, index) => (
                             <div
                                 key={item.id}
                                 className={`
                 flex items-center gap-3 md:gap-4 px-2 md:px-3 py-3 md:py-2 border border-gray-300 rounded-lg
-                ${index !== features.length - 1}
+                ${index !== product.features.length - 1}
               `}
                             >
                                 <div className="shrink-0">
@@ -963,7 +1012,7 @@ function Details() {
 
                     {/* Desktop / Tablet */}
                     <div className="mt-6 hidden md:grid md:grid-cols-5 md:gap-5 lg:gap-6">
-                        {betterResultsProducts.slice(0, 5).map((item) => (
+                        {product.betterResultsProducts.slice(0, 5).map((item) => (
                             <div
                                 key={item.id}
                                 className="rounded-lg bg-white p-2 shadow-[0_4px_14px_rgba(0,0,0,0.05)]"
@@ -1028,7 +1077,7 @@ function Details() {
                             ref={sliderRef}
                             className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth scrollbar-hide"
                         >
-                            {betterResultsProducts.map((item) => (
+                            {product.betterResultsProducts.map((item) => (
                                 <div
                                     key={item.id}
                                     className="min-w-[50%] snap-center rounded-lg bg-white p-3"
@@ -1100,7 +1149,7 @@ function Details() {
                     </div>
 
                     <div className="divide-y divide-[#d8d8d8] border-t border-[#d8d8d8]">
-                        {productFaqs.map((faq, index) => {
+                        {product.faqs.map((faq, index) => {
                             const isOpen = openIndex === index;
 
                             return (
@@ -1163,7 +1212,7 @@ function Details() {
                                     transform: `translateX(-${currentIndex * (100 / slidesToShow)}%)`,
                                 }}
                             >
-                                {featuredInData.map((item, index) => (
+                                {pressLogos.map((item, index) => (
                                     <div
                                         key={item.id || index}
                                         className="flex shrink-0 items-center justify-center"
@@ -1222,7 +1271,7 @@ function Details() {
                         {/* Reviews Tab */}
                         {activeTab === "reviews" && (
                             <div className="divide-y divide-[#e5e7eb]">
-                                {productReviews.map((review, index) => (
+                                {product.productReviews.map((review, index) => (
                                     <div
                                         key={review.id || index}
                                         className="px-4 py-5 sm:px-4 sm:py-6"
@@ -1294,7 +1343,7 @@ function Details() {
                         {/* Questions Tab */}
                         {activeTab === "questions" && (
                             <div className="divide-y divide-[#e5e7eb]">
-                                {productQuestions.map((item, index) => (
+                                {product.productQuestions.map((item, index) => (
                                     <div
                                         key={item.id || index}
                                         className="px-4 py-5 sm:px-4 sm:py-6"
@@ -1344,7 +1393,7 @@ function Details() {
 
                     {/* Desktop / Tablet */}
                     <div className="mt-6 hidden md:grid md:grid-cols-5 md:gap-5 lg:gap-6">
-                        {betterResultsProducts.slice(0, 5).map((item) => (
+                        {(product.trendingProducts || []).slice(0, 5).map((item) => (
                             <div
                                 key={item.id}
                                 className="rounded-lg bg-white p-2 shadow-[0_4px_14px_rgba(0,0,0,0.05)]"
@@ -1409,7 +1458,7 @@ function Details() {
                             ref={sliderRef}
                             className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth scrollbar-hide"
                         >
-                            {betterResultsProducts.map((item) => (
+                            {(product.trendingProducts || []).map((item) => (
                                 <div
                                     key={item.id}
                                     className="min-w-[50%] snap-center rounded-lg bg-white px-3"
@@ -1481,7 +1530,7 @@ function Details() {
 
                     {/* Desktop / Tablet */}
                     <div className="mt-6 hidden md:grid md:grid-cols-5 md:gap-5 lg:gap-6">
-                        {betterResultsProducts.slice(0, 5).map((item) => (
+                        {(product.similarProducts || []).slice(0, 5).map((item) => (
                             <div
                                 key={item.id}
                                 className="rounded-lg bg-white p-2 shadow-[0_4px_14px_rgba(0,0,0,0.05)]"
@@ -1546,7 +1595,7 @@ function Details() {
                             ref={sliderRef}
                             className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth scrollbar-hide"
                         >
-                            {betterResultsProducts.map((item) => (
+                            {(product.similarProducts || []).map((item) => (
                                 <div
                                     key={item.id}
                                     className="min-w-[50%] snap-center rounded-lg bg-white p-3"
@@ -1612,12 +1661,12 @@ function Details() {
             <section className="w-full py-4">
                 <div className="px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        {features.map((item, index) => (
+                        {product.features.map((item, index) => (
                             <div
                                 key={item.id}
                                 className={`
                 flex items-center gap-3 md:gap-4 px-2 md:px-3 py-3 md:py-2 border border-gray-300 rounded-lg
-                ${index !== features.length - 1}
+                ${index !== product.features.length - 1}
               `}
                             >
                                 <div className="shrink-0">

@@ -1,0 +1,49 @@
+const path = require('path');
+const express = require('express');
+const http = require('http');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
+const socketModule = require('./shared/socket');
+const authRoutes = require('./modules/auth/routes/auth.routes');
+const productRoutes = require('./modules/products/routes/products.routes');
+const categoryRoutes = require('./modules/categories/routes/categories.routes');
+const brandRoutes = require('./modules/brands/routes/brands.routes');
+const bannerRoutes = require('./modules/banners/routes/banners.routes');
+const cartRoutes = require('./modules/cart/routes/cart.routes');
+const orderRoutes = require('./modules/orders/routes/orders.routes');
+const historyRoutes = require('./modules/history/routes/history.routes');
+const homeRoutes = require('./modules/home/routes/home.routes');
+
+const app = express();
+const server = http.createServer(app);
+
+// Initialize Socket.io
+socketModule.init(server);
+
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/home', homeRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/brands', brandRoutes);
+app.use('/api/banners', bannerRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/history', historyRoutes);
+
+// Health check
+app.get('/', (req, res) => {
+    res.send('E-Commerce Backend is running...');
+});
+
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+});

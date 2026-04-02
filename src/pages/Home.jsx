@@ -2,17 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Button from '../components/Button'
 import ProductCard from '../components/ProductCard'
 import SectionTitle from '../components/SectionTitle'
-import {
-  categories,
-  topSellers,
-  brands,
-  concernTabs,
-  concernProducts,
-  promoBanners,
-  essentialsProducts,
-  dualPromoBanners,
-  trendingProducts,
-} from '../assets/data/homeData'
+import { fetchApi } from '../api/client.js'
 import { ChevronLeft, ChevronRight, Plus, Minus } from 'lucide-react'
 import blogImg1 from '/src/assets/images/blogs/img1.avif'
 import blogImg2 from '/src/assets/images/blogs/img2.avif'
@@ -20,7 +10,19 @@ import { useNavigate } from 'react-router-dom'
 import { useCart } from "../context/CartContext";
 
 function Home() {
-  const [activeConcern, setActiveConcern] = useState(concernTabs[0])
+  const [categories, setCategories] = useState([])
+  const [topSellers, setTopSellers] = useState([])
+  const [brands, setBrands] = useState([])
+  const [concernTabs, setConcernTabs] = useState([])
+  const [concernProducts, setConcernProducts] = useState({})
+  const [promoBanners, setPromoBanners] = useState([])
+  const [essentialsProducts, setEssentialsProducts] = useState([])
+  const [dualPromoBanners, setDualPromoBanners] = useState([])
+  const [trendingProducts, setTrendingProducts] = useState([])
+  const [homeLoading, setHomeLoading] = useState(true)
+  const [homeError, setHomeError] = useState(null)
+
+  const [activeConcern, setActiveConcern] = useState('')
   const [currentBanner, setCurrentBanner] = useState(0)
 
   const [currentDualBanner, setCurrentDualBanner] = useState(0)
@@ -30,14 +32,40 @@ function Home() {
 
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const handleAddToCart = () => {
+
+  useEffect(() => {
+    setHomeLoading(true)
+    setHomeError(null)
+    fetchApi('/api/home')
+      .then((data) => {
+        setCategories(data.categories || [])
+        setTopSellers(data.topSellers || [])
+        setBrands(data.brands || [])
+        setConcernTabs(data.concernTabs || [])
+        setConcernProducts(data.concernProducts || {})
+        setPromoBanners(data.promoBanners || [])
+        setEssentialsProducts(data.essentialsProducts || [])
+        setDualPromoBanners(data.dualPromoBanners || [])
+        setTrendingProducts(data.trendingProducts || [])
+        const first = data.concernTabs?.[0]
+        if (first) setActiveConcern(first)
+      })
+      .catch((err) => {
+        console.error('[Home] API /api/home failed:', err)
+        setHomeError(err.message || 'Backend se data nahi mila.')
+      })
+      .finally(() => setHomeLoading(false))
+  }, [])
+
+  const handleAddToCart = (item) => {
+    if (!item) return
     addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.gallery?.[0] || product.image,
-    });
-  };
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      image: item.gallery?.[0] || item.image,
+    })
+  }
 
 
   const brandRef = useRef(null);
@@ -70,6 +98,7 @@ function Home() {
   }, []);
 
   useEffect(() => {
+    if (promoBanners.length === 0) return
     const interval = setInterval(() => {
       setCurrentBanner((prev) =>
         prev === promoBanners.length - 1 ? 0 : prev + 1
@@ -77,7 +106,7 @@ function Home() {
     }, 5000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [promoBanners.length])
 
 
   const handlePrevBanner = () => {
@@ -95,11 +124,12 @@ function Home() {
 
 
   useEffect(() => {
+    if (dualPromoBanners.length === 0) return
     const interval = setInterval(() => {
       setCurrentDualBanner((prev) =>
         prev === dualPromoBanners.length - 1 ? 0 : prev + 1
       );
-    }, 2000); // 2 sec
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [dualPromoBanners.length]);
@@ -216,6 +246,20 @@ function Home() {
 
   return (
     <div className='bg-white'>
+      {homeLoading && (
+        <div className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm text-amber-900">
+          Loading products…
+        </div>
+      )}
+      {homeError && (
+        <div className="border-b border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-800">
+          <strong>Backend connect nahi ho paya.</strong> Pehle terminal me{' '}
+          <code className="rounded bg-red-100 px-1">cd backend</code> phir{' '}
+          <code className="rounded bg-red-100 px-1">node server.js</code> chalao (port 5000). MySQL +{' '}
+          <code className="rounded bg-red-100 px-1">schema.sql</code> +{' '}
+          <code className="rounded bg-red-100 px-1">seed.sql</code> run ho chuke hon. Error: {homeError}
+        </div>
+      )}
       {/* ===== HERO SECTION (FULL IMAGE BANNER) ===== */}
       <section>
         <div className="overflow-hidden">
@@ -240,10 +284,10 @@ function Home() {
 
           {/* Desktop / Tablet Grid */}
           <div className="hidden grid-cols-2 gap-4 pt-4 sm:grid sm:grid-cols-3 lg:grid-cols-6">
-            {categories.map((item) => (
+            {categories.map((item, index) => (
               <div
-                key={item.id}
-                onClick={() => navigate("/collection")}
+                key={`cat-${item.id}-${index}`}
+                onClick={() => navigate(`/collection?category=${item.id}`)}
                 className="cursor-pointer bg-white p-4 text-center"
               >
                 <div className="mx-auto mb-4 flex h-30 items-center justify-center overflow-hidden p-3 border border-gray-300 rounded-lg">
@@ -262,10 +306,10 @@ function Home() {
 
           {/* Mobile Slider */}
           <div className="flex overflow-x-auto sm:hidden scrollbar-hide">
-            {categories.map((item) => (
+            {categories.map((item, index) => (
               <div
-                key={item.id}
-                onClick={() => navigate("/collection")}
+                key={`cat-mob-${item.id}-${index}`}
+                onClick={() => navigate(`/collection?category=${item.id}`)}
                 className="min-w-[48%] flex-shrink-0 cursor-pointer bg-white p-4 text-center"
               >
                 <div className="mx-auto mb-4 flex h-30 items-center justify-center overflow-hidden p-3">
@@ -311,9 +355,9 @@ function Home() {
               ref={topSellerRef}
               className="scrollbar-hide flex gap-5 overflow-x-auto scroll-smooth md:px-14"
             >
-              {topSellers.map((product) => (
+              {topSellers.map((product, index) => (
                 <div
-                  key={product.id}
+                  key={`top-${product.id}-${index}`}
                   className="min-w-[220px] sm:min-w-[240px] md:min-w-[250px] lg:min-w-[240px] xl:min-w-[245px] flex-shrink-0"
                 >
                   <ProductCard product={product} />
@@ -329,8 +373,8 @@ function Home() {
         <div className="px-4">
           <div className="overflow-hidden rounded-lg bg-white">
             <img
-              src={promoBanners[currentBanner].image}
-              alt={promoBanners[currentBanner].alt}
+              src={promoBanners[currentBanner]?.image}
+              alt={promoBanners[currentBanner]?.alt}
               className="h-[180px] w-full object-fill md:h-[250px] lg:h-[340px]"
             />
           </div>
@@ -403,9 +447,9 @@ function Home() {
                   ref={essentialsRef}
                   className="scrollbar-hide flex gap-4 overflow-x-auto scroll-smooth pr-14"
                 >
-                  {essentialsProducts.map((item) => (
+                  {essentialsProducts.map((item, index) => (
                     <div
-                      key={item.id}
+                      key={`ess-${item.id}-${index}`}
                       className="min-w-[190px] sm:min-w-[200px] md:min-w-[205px] lg:min-w-[190px] xl:min-w-[200px] flex-shrink-0 rounded-2xl bg-white p-3"
                     >
                       {/* IMAGE */}
@@ -454,7 +498,7 @@ function Home() {
 
                       {/* BUTTON */}
                       <button
-                        onClick={handleAddToCart}
+                        onClick={() => handleAddToCart(item)}
                         className="mt-4 w-full rounded-lg border border-[#7c3aed] px-3 py-2 text-sm font-medium text-[#7c3aed] transition hover:bg-[#f7f2ff]">
                         Add To Cart
                       </button>
@@ -499,9 +543,9 @@ function Home() {
           </div>
 
           <div className="grid gap-6 mt-4 sm:grid-cols-2 lg:grid-cols-4 px-3 py-3 rounded-lg bg-white">
-            {(concernProducts[activeConcern] || []).map((product) => (
+            {(concernProducts[activeConcern] || []).map((product, index) => (
               <ProductCard
-                key={product.id}
+                key={`concern-${product.id}-${index}`}
                 product={product}
               />
             ))}
@@ -521,8 +565,8 @@ function Home() {
                 {/* CURRENT BANNER */}
                 <div className="dual-banner-panel z-10 rounded-lg overflow-hidden">
                   <img
-                    src={dualPromoBanners[currentDualBanner].image}
-                    alt={dualPromoBanners[currentDualBanner].alt}
+                    src={dualPromoBanners[currentDualBanner]?.image}
+                    alt={dualPromoBanners[currentDualBanner]?.alt}
                     className="h-full w-full object-fit"
                   />
                 </div>
@@ -562,9 +606,9 @@ function Home() {
               ref={trendingRef}
               className="scrollbar-hide flex gap-8 overflow-x-auto scroll-smooth lg:px-10"
             >
-              {trendingProducts.map((product) => (
+              {trendingProducts.map((product, index) => (
                 <div
-                  key={product.id}
+                  key={`trend-${product.id}-${index}`}
                   className="w-[240px] min-w-[240px] max-w-[240px] flex-shrink-0"
                 >
                   <div className="flex h-full w-full min-w-0 flex-col">
@@ -607,7 +651,7 @@ function Home() {
                     <div className="mt-1">
                       <Button
                         variant="outline"
-                        onClick={handleAddToCart}
+                        onClick={() => handleAddToCart(product)}
                         className="w-full rounded-lg border-[#8b3dff] py-3 text-[16px] font-medium text-[#8b3dff] hover:bg-[#faf5ff]"
                       >
                         Add to Cart
@@ -623,7 +667,7 @@ function Home() {
 
 
 
-      <section className="w-full bg-[#f3f3f3] py-10 md:py-5">
+      <section className="w-full py-10 md:py-5">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="grid items-start gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 py-9">
             {/* LEFT SIDE IMAGE SCROLL */}

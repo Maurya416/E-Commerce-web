@@ -1,16 +1,38 @@
 import { useRef, useEffect } from "react";
-import { collectionProducts } from '../assets/data/homeData'
 import { useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { features } from '../assets/data/homeData'
-import { useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { fetchApi } from '../api/client.js'
 
 
 function Collection() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const categoryId = searchParams.get("category");
+
     const { addToCart } = useCart();
+    const [collectionProducts, setCollectionProducts] = useState([])
+    const [features, setFeatures] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
+    const [pageError, setPageError] = useState(null)
+
+    useEffect(() => {
+        setPageError(null)
+        const url = categoryId 
+            ? `/api/home/collection?category=${categoryId}` 
+            : '/api/home/collection';
+
+        fetchApi(url)
+            .then((data) => {
+                setCollectionProducts(data.collectionProducts || [])
+                setFeatures(data.features || [])
+            })
+            .catch((err) => {
+                console.error('[Collection] API failed:', err)
+                setPageError(err.message || 'Backend se data nahi mila.')
+            })
+    }, [categoryId])
 
 
     const heroBanners = [
@@ -53,7 +75,7 @@ function Collection() {
         const startIndex = (currentPage - 1) * itemsPerPage
         const endIndex = startIndex + itemsPerPage
         return collectionProducts.slice(startIndex, endIndex)
-    }, [currentPage])
+    }, [currentPage, collectionProducts])
 
     const handlePrevPage = () => {
         if (currentPage > 1) {
@@ -94,6 +116,11 @@ function Collection() {
 
     return (
         <div className="bg-white">
+            {pageError && (
+                <div className="border-b border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-800">
+                    <strong>API error:</strong> {pageError}
+                </div>
+            )}
             {/* ===== HERO SECTION ===== */}
             <section>
                 <div className="overflow-hidden">
@@ -119,7 +146,7 @@ function Collection() {
                         {currentProducts.map((product) => (
                             <article
                                 key={product.id}
-                                onClick={() => navigate("/details")}
+                                onClick={() => navigate(product.slug ? `/details/${product.slug}` : '/details')}
                                 className="overflow-hidden rounded-2xl border border-[#e5e7eb] bg-white cursor-pointer"
                             >
                                 {/* IMAGE AREA */}

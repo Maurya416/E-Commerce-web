@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { fetchApi } from "../api/client.js";
 
 function Checkout() {
   const isValidEmail = (email) => {
@@ -72,17 +73,22 @@ function Checkout() {
     setStep(3);
   };
 
-  const handlePayment = () => {
-    setStatus("processing");
-
-    setTimeout(() => {
-      if (fakeResult === "success") {
-        setStatus("success");
-        clearCart();
-      } else {
-        setStatus("failed");
-      }
-    }, 2000);
+  const handlePayment = async () => {
+    try {
+      setStatus("processing");
+      const orderData = await fetchApi('/api/orders/place', {
+        method: 'POST',
+        body: {
+          address: formData,
+          paymentMethod: paymentMethod
+        }
+      });
+      setStatus("success");
+      clearCart();
+    } catch (err) {
+      console.error('Order placement failed:', err);
+      setStatus("failed");
+    }
   };
 
   const paymentOptions = [

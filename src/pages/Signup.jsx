@@ -1,11 +1,41 @@
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const navigate = useNavigate();
+  const { signup } = useAuth();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!fullName || !email || !password || !confirmPassword) {
+      return toast.error("Please fill in all fields");
+    }
+    if (password !== confirmPassword) {
+      return toast.error("Passwords do not match");
+    }
+
+    try {
+      setIsSubmitting(true);
+      await signup(fullName, email, password);
+      toast.success("Account created successfully! Please login.");
+      navigate("/login");
+    } catch (err) {
+      toast.error(err.message || "Registration failed");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section className="mt-10 mb-10 flex min-h-full items-center justify-center bg-[#f6f7fb] px-4">
@@ -31,7 +61,7 @@ function Signup() {
         </p>
 
         {/* FORM */}
-        <div className="mt-6 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           {/* FULL NAME */}
           <div>
             <label className="text-sm font-medium text-gray-700">
@@ -39,6 +69,8 @@ function Signup() {
             </label>
             <input
               type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
               placeholder="Enter your full name"
               className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-[#8b3dff] focus:ring-2 focus:ring-[#e9ddff]"
             />
@@ -49,6 +81,8 @@ function Signup() {
             <label className="text-sm font-medium text-gray-700">Email</label>
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-[#8b3dff] focus:ring-2 focus:ring-[#e9ddff]"
             />
@@ -63,6 +97,8 @@ function Signup() {
             <div className="relative mt-1">
               <input
                 type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Create your password"
                 className="w-full rounded-lg border border-gray-300 px-4 py-2.5 pr-10 outline-none focus:border-[#8b3dff] focus:ring-2 focus:ring-[#e9ddff]"
               />
@@ -90,6 +126,8 @@ function Signup() {
             <div className="relative mt-1">
               <input
                 type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm your password"
                 className="w-full rounded-lg border border-gray-300 px-4 py-2.5 pr-10 outline-none focus:border-[#8b3dff] focus:ring-2 focus:ring-[#e9ddff]"
               />
@@ -109,8 +147,12 @@ function Signup() {
           </div>
 
           {/* SIGNUP BUTTON */}
-          <button className="w-full rounded-lg bg-gradient-to-r from-[#8b3dff] to-[#6d28d9] py-3 font-semibold text-white transition hover:opacity-95">
-            Sign Up
+          <button 
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full rounded-lg bg-gradient-to-r from-[#8b3dff] to-[#6d28d9] py-3 font-semibold text-white transition hover:opacity-95 flex items-center justify-center gap-2"
+          >
+            {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : "Sign Up"}
           </button>
 
           {/* DIVIDER */}
@@ -121,7 +163,7 @@ function Signup() {
           </div>
 
           {/* GOOGLE SIGNUP */}
-          <button className="w-full rounded-lg border border-gray-300 py-2 font-medium text-gray-700 transition hover:bg-gray-50">
+          <button type="button" className="w-full rounded-lg border border-gray-300 py-2 font-medium text-gray-700 transition hover:bg-gray-50">
             Continue with Google
           </button>
 
@@ -135,10 +177,10 @@ function Signup() {
               Login
             </span>
           </p>
-        </div>
+        </form>
       </div>
     </section>
   );
 }
 
-export default Signup;
+export default Signup;
