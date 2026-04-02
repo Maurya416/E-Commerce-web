@@ -4,29 +4,34 @@ import Collection from './pages/Collection'
 import Details from './pages/Details'
 import Mainlayout from './layouts/MainLayout'
 import ScrollToTop from './components/ScrollToTop'
-import Toast from './components/Toast'
 import CartDrawer from './pages/CartDrawer'
 import Blog from './pages/Blog_Detail'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Checkout from './pages/Checkout'
+import ProtectedRoute from './components/ProtectedRoute'
+import MyOrders from './pages/MyOrders'
+import { Toaster } from 'react-hot-toast'
 
 function App() {
   return (
     <>
       <ScrollToTop />
-      <Toast/>
+      <Toaster position="top-center" reverseOrder={false} />
 
       <Routes>
         <Route element={<Mainlayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/collection" element={<Collection />} />
-          <Route path="/details" element={<Details />} />
-          <Route path='/cart' element={<CartDrawer/>}/>
-         <Route path='/blog' element={<Blog/>}/>
-          <Route path='/login' element={<Login/>}/>
-          <Route path='/signup' element={<Signup/>}/>
-          <Route path='/checkout' element={<Checkout/>}/>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          
+          <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/collection" element={<ProtectedRoute><Collection /></ProtectedRoute>} />
+          <Route path="/details/:slug?" element={<ProtectedRoute><Details /></ProtectedRoute>} />
+          <Route path='/cart' element={<ProtectedRoute><CartDrawer/></ProtectedRoute>}/>
+          <Route path='/checkout' element={<ProtectedRoute><Checkout/></ProtectedRoute>}/>
+          <Route path='/orders' element={<ProtectedRoute><MyOrders/></ProtectedRoute>}/>
+          
+          <Route path='/blog' element={<Blog/>}/>
         </Route>
       </Routes>
     </>

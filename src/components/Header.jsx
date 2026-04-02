@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Search, ShoppingCart, User, X } from "lucide-react";
+import { Search, ShoppingCart, User, X, LogOut } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Header() {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const { cartCount } = useCart();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -15,9 +17,9 @@ function Header() {
           {/* Logo */}
           <div className="flex items-center">
             <img
-              src="\src\assets\images\icons\Clinikally_LOGO_for_Website_240x.webp"
+              src="/src/assets/images/icons/Clinikally_LOGO_for_Website_240x.webp"
               alt="Clinikally"
-              onClick={()=>navigate("/")}
+              onClick={() => navigate("/")}
               className="h-12 w-auto object-contain pb-1 cursor-pointer"
             />
           </div>
@@ -47,16 +49,40 @@ function Header() {
               )}
             </button>
 
-            <button 
-            onClick={()=> navigate("/login")}
-            className="flex items-center gap-1.5 text-sm font-medium text-slate-700 hover:text-violet-700 sm:text-base cursor-pointer">
-              <User className="h-5 w-5" />
-              <span className="hidden sm:block">Login</span>
-            </button>
+            {user ? (
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => navigate("/orders")}
+                  className="flex items-center gap-1.5 text-sm font-medium text-slate-700 hover:text-violet-700 sm:text-base cursor-pointer"
+                >
+                  <User className="h-5 w-5" />
+                  <span className="hidden sm:block">{user.full_name?.split(' ')[0]}</span>
+                </button>
+                <button
+                  onClick={() => {
+                    logout();
+                    navigate("/login");
+                  }}
+                  className="flex items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-800 sm:text-base cursor-pointer"
+                >
+                  <LogOut className="h-5 w-5" />
+                  <span className="hidden sm:block">Logout</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => navigate("/login")}
+                className="flex items-center gap-1.5 text-sm font-medium text-slate-700 hover:text-violet-700 sm:text-base cursor-pointer"
+              >
+                <User className="h-5 w-5" />
+                <span className="hidden sm:block">Login</span>
+              </button>
+            )}
 
-            <button 
-            onClick={()=> navigate("/cart")}
-            className="relative flex items-center gap-1.5 text-sm font-medium text-slate-700 hover:text-violet-700 sm:text-base cursor-pointer">
+            <button
+              onClick={() => navigate("/cart")}
+              className="relative flex items-center gap-1.5 text-sm font-medium text-slate-700 hover:text-violet-700 sm:text-base cursor-pointer"
+            >
               <ShoppingCart className="h-5 w-5" />
               <span className="hidden sm:block">Cart</span>
 

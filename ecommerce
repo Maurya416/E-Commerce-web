@@ -1,0 +1,64 @@
+# E-Commerce Backend Walkthrough
+
+I have successfully built a robust, modular backend for your E-Commerce application. The system is designed to handle products, categories, users, orders, and real-time updates seamlessly.
+
+## Key Features Implemented
+
+### 1. Advanced Database Schema
+- **Products**: Detailed fields including slug, price, save percent, rating, and size.
+- **Associations**: Multi-image support, short benefits, trust points, FAQs, and user reviews.
+- **Management**: Tables for categories, brands, concerns, and mapping.
+- **Transactions**: Secure order placement moving items from `carts` to `orders` and `order_items`.
+- **History**: Tracking purchase actions with "Delete History" capability.
+
+### 2. Modular Architecture (Clean Code)
+The backend is organized into independent modules:
+- `auth`: JWT-based registration, login, and profile.
+- `products`: Deep-fetch logic for complete product details.
+- `cart & orders`: Integrated cart management with transactional order logic.
+- `banners`: Support for Promo and Dual banners.
+- `history`: User-specific purchase logs.
+
+### 3. Real-time Integration
+- **Centralized Socket.io**: Located in `backend/shared/socket.js`.
+- **Engagement**: Automatically emits `cart_updated` events to users when they add items to their cart.
+
+### 4. Professional API Utilities
+- **Standardized Responses**: Using `successResponse` and `errorResponse` helpers for consistent JSON output.
+- **Secure Middleware**: JWT protection for all sensitive routes (cart, orders, profile, history).
+
+---
+
+## How to Set Up and Run
+
+### Step 1: Database Setup
+1. Create a MySQL database named `e_commerce_db`.
+2. Run the schema script: [schema.sql](file:///d:/node/E-Commerce-web/backend/database/schema.sql)
+3. (Optional) Populate initial data: [seed.sql](file:///d:/node/E-Commerce-web/backend/database/seed.sql)
+
+### Step 2: Configuration
+1. Initialize the environment variables by creating a `.env` file in the `backend/` folder based on [.env.example](file:///d:/node/E-Commerce-web/backend/.env.example).
+2. Set your DB credentials and `JWT_SECRET`.
+
+### Step 3: Start the Backend
+Open a terminal in the `backend/` directory and run:
+```bash
+npm install
+node server.js
+```
+
+---
+
+## API Summary
+
+| Module | Base Route | Key Operations |
+| :--- | :--- | :--- |
+| **Auth** | `/api/auth` | `/register`, `/login`, `/profile` |
+| **Products** | `/api/products` | `/`, `/:slug`, `/featured` |
+| **Categories** | `/api/categories` | `/` |
+| **Cart** | `/api/cart` | `/add`, `/update`, `/:cartId` |
+| **Orders** | `/api/orders` | `/place` |
+| **History** | `/api/history` | `/`, `/:historyId` (DELETE) |
+
+> [!TIP]
+> All product photos are served using the paths currently used in your frontend (`/src/assets/images/...`) for immediate compatibility.

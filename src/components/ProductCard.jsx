@@ -26,7 +26,7 @@ function ProductCard({ product }) {
 
       {/* TITLE */}
       <div className="w-full min-w-0">
-        <div className="min-h-[35px] w-full overflow-hidden">
+        <div className="min-h-[28px] w-full overflow-hidden">
           <h3 className="break-words text-base font-semibold leading-6 text-slate-900 md:text-lg">
             {product.name}
           </h3>
