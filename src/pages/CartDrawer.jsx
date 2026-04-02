@@ -68,7 +68,7 @@ function Cart() {
                           <h3 className="text-lg font-semibold text-slate-900">
                             {item.name}
                           </h3>
-                          {item.size && (
+                          {item.size && ( 
                             <p className="text-sm text-slate-500">
                               {item.size}
                             </p>
@@ -76,7 +76,7 @@ function Cart() {
                         </div>
 
                         <button onClick={() => removeFromCart(item.id)}>
-                          <Trash2 className="text-gray-400 hover:text-red-500 h-5" />
+                          <Trash2 className="text-gray-400 hover:text-red-300 h-4 md:h-5 cursor-pointer"/>
                         </button>
                       </div>
 

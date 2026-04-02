@@ -34,32 +34,28 @@ export const features = [
 function BlogHero() {
   return (
     <div className='bg-white'>
-      <section className="w-full bg-[#efefef]">
+      <section className="w-full">
+        <div className="relative w-full min-h-[200px] md:min-h-[420px] flex items-center justify-center">
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[320px] lg:min-h-[420px]">
+          {/* BACKGROUND IMAGE */}
+          <div
+            className="absolute inset-0 bg-contain bg-center"
+            style={{
+              backgroundImage: "url('/src/assets/images/blogs/Coal_tar_banner.webp')",
+            }}
+          ></div>
 
-          {/* LEFT CONTENT */}
-          <div className="flex items-center px-6 md:px-20">
-            <h1 className="text-2xl md:text-4xl font-semibold text-gray-800 leading-snug">
-              Coal Tar In Haircare:
-              <br />
-              Clearing the Myths with
-              <br />
-              Real Facts
+          {/* OVERLAY (opacity control) */}
+          <div className="absolute inset-0 bg-black/60"></div>
+
+          {/* CENTER CONTENT */}
+          <div className="relative z-10 px-6 text-center max-w-3xl">
+            <h1 className="text-xl md:text-3xl xl:text-4xl font-semibold text-white leading-snug">
+              Coal Tar In Haircare: Clearing the Myths with Real Facts
             </h1>
           </div>
 
-          {/* RIGHT IMAGE */}
-          <div className="w-full h-[260px] sm:h-[300px] md:h-[340px] lg:h-full overflow-hidden pr-7">
-            <img
-              src="/src/assets/images/blogs/img1.avif"
-              alt="Haircare"
-              className="w-full h-full object-contain"
-            />
-          </div>
-
         </div>
-
       </section>
 
 
