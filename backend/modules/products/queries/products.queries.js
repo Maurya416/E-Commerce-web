@@ -182,6 +182,46 @@ const ProductQueries = {
         const [rows] = await pool.execute('SELECT * FROM products ORDER BY recently_in_carts DESC LIMIT ?', [limit]);
         return rows;
     },
+
+    addReview: async (productId, reviewData) => {
+        const { rating, title, comment, name, email } = reviewData;
+        const initial = name ? name.charAt(0).toUpperCase() : 'U';
+        const [result] = await pool.execute(
+            `INSERT INTO product_reviews (product_id, reviewer_initial, reviewer_name, review_title, rating, comment, is_verified) 
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [productId, initial, name, title, rating, comment, 0]
+        );
+
+        // Update product review count and average rating
+        await pool.execute(
+            `UPDATE products SET 
+             review_count = (SELECT COUNT(*) FROM product_reviews WHERE product_id = ?),
+             rating = (SELECT AVG(rating) FROM product_reviews WHERE product_id = ?)
+             WHERE id = ?`,
+            [productId, productId, productId]
+        );
+
+        return result.insertId;
+    },
+
+    addQuestion: async (productId, questionData) => {
+        const { name, question } = questionData;
+        const initial = name ? name.charAt(0).toUpperCase() : 'U';
+        const [result] = await pool.execute(
+            `INSERT INTO product_questions (product_id, initial_char, name, question, answer, sort_order) 
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [productId, initial, name, question, '', 0]
+        );
+        return result.insertId;
+    },
+
+    answerQuestion: async (questionId, answer) => {
+        const [result] = await pool.execute(
+            'UPDATE product_questions SET answer = ? WHERE id = ?',
+            [answer, questionId]
+        );
+        return result.affectedRows > 0;
+    },
 };
 
 module.exports = ProductQueries;

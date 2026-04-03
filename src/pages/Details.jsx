@@ -137,7 +137,7 @@ function Details() {
     const [reviewForm, setReviewForm] = useState({
         rating: 0,
         title: "",
-        content: "",
+        comment: "",
         name: "",
         email: "",
     });
@@ -159,34 +159,48 @@ function Details() {
         setShowReviewForm(false);
     };
 
-    const handleSubmitReview = (e) => {
-        if (e && e.preventDefault) e.preventDefault();
-        const newReview = {
-            id: Date.now(),
-            initial: reviewForm.name ? reviewForm.name.charAt(0).toUpperCase() : "U",
-            rating: reviewForm.rating,
-            name: reviewForm.name || "Anonymous",
-            title: reviewForm.title,
-            comment: reviewForm.content,
-            verified: false,
-        };
-        setProduct((prev) => ({ ...prev, productReviews: [newReview, ...(prev?.productReviews || [])] }));
-        setReviewForm({ rating: 0, title: "", content: "", name: "", email: "" });
-        setShowReviewForm(false);
+    const refetchProduct = () => {
+        fetchApi(`/api/products/${encodeURIComponent(slugResolved)}`)
+            .then((data) => {
+                setProduct(data);
+            })
+            .catch((e) => {
+                setLoadError(e.message);
+            });
     };
 
-    const handleSubmitQuestion = (e) => {
+    const handleSubmitReview = async (e) => {
         if (e && e.preventDefault) e.preventDefault();
-        const newQuestion = {
-            id: Date.now(),
-            initial: questionForm.name ? questionForm.name.charAt(0).toUpperCase() : "U",
-            name: questionForm.name || "Anonymous",
-            question: questionForm.question,
-            answer: "",
-        };
-        setProduct((prev) => ({ ...prev, productQuestions: [newQuestion, ...(prev?.productQuestions || [])] }));
-        setQuestionForm({ name: "", email: "", question: "" });
-        setShowQuestionForm(false);
+        try {
+            await fetchApi(`/api/products/${product.id}/reviews`, {
+                method: "POST",
+                body: reviewForm,
+            });
+            setReviewForm({ rating: 0, title: "", comment: "", name: "", email: "" });
+            setShowReviewForm(false);
+            refetchProduct();
+        } catch (err) {
+            alert("Failed to submit review: " + err.message);
+        }
+    };
+
+    const handleSubmitQuestion = async (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        try {
+            await fetchApi(`/api/products/${product.id}/questions`, {
+                method: "POST",
+                body: {
+                    name: questionForm.name,
+                    email: questionForm.email,
+                    question: questionForm.question
+                },
+            });
+            setQuestionForm({ name: "", email: "", question: "" });
+            setShowQuestionForm(false);
+            refetchProduct();
+        } catch (err) {
+            alert("Failed to submit question: " + err.message);
+        }
     };
 
 
@@ -1382,8 +1396,8 @@ function Details() {
                                             />
 
                                             <textarea
-                                                value={reviewForm.content}
-                                                onChange={(e) => setReviewForm(prev => ({ ...prev, content: e.target.value }))}
+                                                value={reviewForm.comment}
+                                                onChange={(e) => setReviewForm(prev => ({ ...prev, comment: e.target.value }))}
                                                 placeholder="Start writing here..."
                                                 className="w-full rounded-lg border border-gray-300 px-3 py-2 h-32"
                                             />
