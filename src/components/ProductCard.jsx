@@ -14,7 +14,7 @@ function ProductCard({ product }) {
     };
 
   return (
-    <div className="group flex h-full w-full flex-col transition-all border border-gray-200 rounded-lg mt-1 px-3 py-1 duration-300 hover:-translate-y-1">
+    <div className="group flex h-full w-full flex-col border border-gray-200 rounded-lg px-3 py-1 hover:-translate-y-1">
       {/* IMAGE */}
       <div className="flex h-40 w-full items-center justify-center overflow-hidden">
         <img

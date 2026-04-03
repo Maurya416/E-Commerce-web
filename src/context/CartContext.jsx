@@ -1,30 +1,13 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { fetchApi } from "../api/client";
 import { useAuth } from "./AuthContext";
+import toast from "react-hot-toast";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const { user } = useAuth();
   const [cartItems, setCartItems] = useState([]);
-  const [toast, setToast] = useState({
-    show: false,
-    message: "",
-  });
-
-  const showToast = (message) => {
-    setToast({
-      show: true,
-      message,
-    });
-
-    setTimeout(() => {
-      setToast({
-        show: false,
-        message: "",
-      });
-    }, 2000);
-  };
 
   const fetchCart = async () => {
     if (!user) return;
@@ -52,9 +35,9 @@ export function CartProvider({ children }) {
 
   const addToCart = async (product) => {
     if (!user) {
-      // If not logged in, just add in-memory (or we should probably redirect to login)
-      // For now, let's assume login is required as per user's earlier requirement.
-      return showToast("Please login to add items to cart");
+      // If not logged in, inform the user
+      toast.error("Please login to add items to cart");
+      return;
     }
 
     try {
@@ -74,10 +57,10 @@ export function CartProvider({ children }) {
       }
       // Re-fetch cart from backend to stay in sync
       await fetchCart();
-      showToast("Product added successfully");
+      toast.success("Product added successfully");
     } catch (err) {
       console.error("Add to cart failed:", err);
-      showToast("Failed to add to cart");
+      toast.error("Failed to add to cart");
     }
   };
 
@@ -140,8 +123,6 @@ export function CartProvider({ children }) {
         clearCart,
         cartCount,
         cartTotal,
-        toast,
-        setToast,
       }}
     >
       {children}

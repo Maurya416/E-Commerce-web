@@ -132,6 +132,62 @@ function Details() {
     const reviewCount = product?.productReviews?.length ?? 0;
     const questionCount = product?.productQuestions?.length ?? 0;
     const [activeTab, setActiveTab] = useState("reviews");
+    const [showReviewForm, setShowReviewForm] = useState(false);
+    const [showQuestionForm, setShowQuestionForm] = useState(false);
+    const [reviewForm, setReviewForm] = useState({
+        rating: 0,
+        title: "",
+        content: "",
+        name: "",
+        email: "",
+    });
+    const [questionForm, setQuestionForm] = useState({
+        name: "",
+        email: "",
+        question: "",
+    });
+
+    const openReviewForm = () => {
+        setActiveTab("reviews");
+        setShowReviewForm(true);
+        setShowQuestionForm(false);
+    };
+
+    const openQuestionForm = () => {
+        setActiveTab("questions");
+        setShowQuestionForm(true);
+        setShowReviewForm(false);
+    };
+
+    const handleSubmitReview = (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        const newReview = {
+            id: Date.now(),
+            initial: reviewForm.name ? reviewForm.name.charAt(0).toUpperCase() : "U",
+            rating: reviewForm.rating,
+            name: reviewForm.name || "Anonymous",
+            title: reviewForm.title,
+            comment: reviewForm.content,
+            verified: false,
+        };
+        setProduct((prev) => ({ ...prev, productReviews: [newReview, ...(prev?.productReviews || [])] }));
+        setReviewForm({ rating: 0, title: "", content: "", name: "", email: "" });
+        setShowReviewForm(false);
+    };
+
+    const handleSubmitQuestion = (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        const newQuestion = {
+            id: Date.now(),
+            initial: questionForm.name ? questionForm.name.charAt(0).toUpperCase() : "U",
+            name: questionForm.name || "Anonymous",
+            question: questionForm.question,
+            answer: "",
+        };
+        setProduct((prev) => ({ ...prev, productQuestions: [newQuestion, ...(prev?.productQuestions || [])] }));
+        setQuestionForm({ name: "", email: "", question: "" });
+        setShowQuestionForm(false);
+    };
 
 
 
@@ -593,7 +649,7 @@ function Details() {
                                         Add to cart
                                     </button>
 
-                                    <button 
+                                    <button
                                         onClick={handleBuyNow}
                                         className="flex h-[48px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#a855f7] to-[#7c3aed] px-3 text-[16px] font-semibold text-white">
                                         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#8b3dff]">
@@ -721,7 +777,7 @@ function Details() {
                                         Add to cart
                                     </button>
 
-                                    <button 
+                                    <button
                                         onClick={handleBuyNow}
                                         className="flex h-[50px] w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#a855f7] to-[#7c3aed] text-xl font-semibold text-white transition hover:opacity-95 xl:flex-1 cursor-pointer">
                                         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#8b3dff]">
@@ -914,7 +970,12 @@ function Details() {
                                     </div>
 
                                     <button
-                                        onClick={handleAddToCart}
+                                        onClick={() => addToCart({
+                                            id: item.id,
+                                            name: item.name,
+                                            price: item.price,
+                                            image: item.gallery?.[0] || item.image,
+                                        })}
                                         className="mt-2 cursor-pointer w-full rounded-lg border border-[#8b3dff] px-3 py-2 text-md font-semibold text-[#8b3dff]">
                                         Add to Cart
                                     </button>
@@ -1063,7 +1124,12 @@ function Details() {
                                 </div>
 
                                 <button
-                                    onClick={handleAddToCart}
+                                    onClick={() => addToCart({
+                                        id: item.id,
+                                        name: item.name,
+                                        price: item.price,
+                                        image: item.gallery?.[0] || item.image,
+                                    })}
                                     className="mt-1 cursor-pointer w-full rounded-lg border border-[#8b3dff] px-3 py-2 text-md font-semibold text-[#8b3dff]">
                                     Add to Cart
                                 </button>
@@ -1128,7 +1194,12 @@ function Details() {
                                     </div>
 
                                     <button
-                                        onClick={handleAddToCart}
+                                        onClick={() => addToCart({
+                                            id: item.id,
+                                            name: item.name,
+                                            price: item.price,
+                                            image: item.gallery?.[0] || item.image,
+                                        })}
                                         className="mt-3 w-full rounded-lg border border-[#8b3dff] px-4 py-2.5 text-[16px] font-semibold text-[#8b3dff] transition hover:bg-[#faf5ff]">
                                         Add to Cart
                                     </button>
@@ -1237,12 +1308,30 @@ function Details() {
             <section className="w-full bg-white py-8 sm:py-10 lg:py-1">
                 <div className="px-4 sm:px-6 lg:px-3">
                     <div className="overflow-hidden rounded-lg border border-[#e5e7eb] bg-white">
+                        {/* Top thumbnails + actions */}
+                        <div className="px-4 md:px-5 py-4">
+                            <div className="flex items-start justify-between">
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={openReviewForm}
+                                        className="inline-flex items-center gap-2 rounded-full border border-[#8b3dff] px-3 py-2 text-sm font-medium text-[#8b3dff] cursor-pointer">
+                                        Write a review
+                                    </button>
+
+                                    <button
+                                        onClick={openQuestionForm}
+                                        className="inline-flex items-center gap-2 rounded-full border border-[#8b3dff] px-3 py-2 text-sm font-medium text-[#8b3dff] cursor-pointer">
+                                        Ask a question
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                         {/* Tabs */}
                         <div className="border-b border-[#e5e7eb] px-4 sm:px-8">
                             <div className="flex items-center gap-6 sm:gap-8 overflow-x-auto">
                                 <button
                                     onClick={() => setActiveTab("reviews")}
-                                    className={`relative py-4 text-sm font-normal md:text-sm ${activeTab === "reviews"
+                                    className={`relative py-4 text-sm font-normal md:text-sm cursor-pointer ${activeTab === "reviews"
                                         ? "text-[#111827]"
                                         : "text-[#111827]"
                                         }`}
@@ -1255,7 +1344,7 @@ function Details() {
 
                                 <button
                                     onClick={() => setActiveTab("questions")}
-                                    className={`relative whitespace-nowrap py-4 text-[20px] font-normal transition sm:text-[22px] ${activeTab === "questions"
+                                    className={`relative whitespace-nowrap py-4 text-[20px] font-normal transition sm:text-[22px] cursor-pointer ${activeTab === "questions"
                                         ? "text-[#111827]"
                                         : "text-[#111827]"
                                         }`}
@@ -1271,6 +1360,56 @@ function Details() {
                         {/* Reviews Tab */}
                         {activeTab === "reviews" && (
                             <div className="divide-y divide-[#e5e7eb]">
+                                {showReviewForm && (
+                                    <div className="px-4 py-5 sm:px-4 sm:py-6 bg-white">
+                                        <div className="space-y-3">
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-sm font-medium">Rating</span>
+                                                <div className="flex gap-1">
+                                                    {[1, 2, 3, 4, 5].map((s) => (
+                                                        <button key={s} onClick={() => setReviewForm(prev => ({ ...prev, rating: s }))} className={`text-[#8b3dff] ${reviewForm.rating >= s ? 'opacity-100' : 'opacity-40'}`}>
+                                                            <Star className="h-5 w-5 cursor-pointer" />
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <input
+                                                value={reviewForm.title}
+                                                onChange={(e) => setReviewForm(prev => ({ ...prev, title: e.target.value }))}
+                                                placeholder="Review Title"
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                                            />
+
+                                            <textarea
+                                                value={reviewForm.content}
+                                                onChange={(e) => setReviewForm(prev => ({ ...prev, content: e.target.value }))}
+                                                placeholder="Start writing here..."
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 h-32"
+                                            />
+
+                                            <input
+                                                value={reviewForm.name}
+                                                onChange={(e) => setReviewForm(prev => ({ ...prev, name: e.target.value }))}
+                                                placeholder="Display name"
+                                                className="w-full rounded-md border border-gray-300 px-3 py-2"
+                                            />
+
+                                            <input
+                                                value={reviewForm.email}
+                                                onChange={(e) => setReviewForm(prev => ({ ...prev, email: e.target.value }))}
+                                                placeholder="Your email address"
+                                                className="w-full rounded-md border border-gray-300 px-3 py-2"
+                                            />
+
+                                            <div className="flex items-center gap-3 py-3">
+                                                <button onClick={handleSubmitReview} className="rounded-lg border border-[#8b3dff] px-4 py-2 text-[#8b3dff]">Submit Review</button>
+                                                <button onClick={() => setShowReviewForm(false)} className="text-sm text-gray-500">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {product.productReviews.map((review, index) => (
                                     <div
                                         key={review.id || index}
@@ -1343,6 +1482,38 @@ function Details() {
                         {/* Questions Tab */}
                         {activeTab === "questions" && (
                             <div className="divide-y divide-[#e5e7eb]">
+                                {showQuestionForm && (
+                                    <div className="px-4 py-5 sm:px-4 sm:py-6 bg-white">
+                                        <div className="space-y-3">
+                                            <input
+                                                value={questionForm.name}
+                                                onChange={(e) => setQuestionForm(prev => ({ ...prev, name: e.target.value }))}
+                                                placeholder="Display name"
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                                            />
+
+                                            <input
+                                                value={questionForm.email}
+                                                onChange={(e) => setQuestionForm(prev => ({ ...prev, email: e.target.value }))}
+                                                placeholder="Your email address"
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                                            />
+
+                                            <textarea
+                                                value={questionForm.question}
+                                                onChange={(e) => setQuestionForm(prev => ({ ...prev, question: e.target.value }))}
+                                                placeholder="Write your question here"
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 h-32"
+                                            />
+
+                                            <div className="flex items-center gap-3">
+                                                <button onClick={handleSubmitQuestion} className="rounded-lg border border-[#8b3dff] px-4 py-2 text-[#8b3dff]">Submit Question</button>
+                                                <button onClick={() => setShowQuestionForm(false)} className="text-sm text-gray-500">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {product.productQuestions.map((item, index) => (
                                     <div
                                         key={item.id || index}
@@ -1444,7 +1615,12 @@ function Details() {
                                 </div>
 
                                 <button
-                                    onClick={handleAddToCart}
+                                    onClick={() => addToCart({
+                                        id: item.id,
+                                        name: item.name,
+                                        price: item.price,
+                                        image: item.gallery?.[0] || item.image,
+                                    })}
                                     className="w-full rounded-lg border border-[#8b3dff] px-3 py-2 text-md font-semibold text-[#8b3dff] cursor-pointer">
                                     Add to Cart
                                 </button>
@@ -1509,7 +1685,12 @@ function Details() {
                                     </div>
 
                                     <button
-                                        onClick={handleAddToCart}
+                                        onClick={() => addToCart({
+                                            id: item.id,
+                                            name: item.name,
+                                            price: item.price,
+                                            image: item.gallery?.[0] || item.image,
+                                        })}
                                         className="mt-1 w-full rounded-lg border border-[#8b3dff] px-4 py-2.5 text-[16px] font-semibold text-[#8b3dff] transition hover:bg-[#faf5ff]">
                                         Add to Cart
                                     </button>
@@ -1581,7 +1762,12 @@ function Details() {
                                 </div>
 
                                 <button
-                                    onClick={handleAddToCart}
+                                    onClick={() => addToCart({
+                                        id: item.id,
+                                        name: item.name,
+                                        price: item.price,
+                                        image: item.gallery?.[0] || item.image,
+                                    })}
                                     className="mt-1 cursor-pointer w-full rounded-lg border border-[#8b3dff] px-3 py-2 text-md font-semibold text-[#8b3dff]">
                                     Add to Cart
                                 </button>

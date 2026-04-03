@@ -75,7 +75,7 @@ function Cart() {
                           )}
                         </div>
 
-                        <button onClick={() => removeFromCart(item.id)}>
+                        <button onClick={() => removeFromCart(item.cartId)}>
                           <Trash2 className="text-gray-400 hover:text-red-300 h-4 md:h-5 cursor-pointer"/>
                         </button>
                       </div>
