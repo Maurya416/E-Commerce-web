@@ -11,6 +11,7 @@ import Signup from './pages/Signup'
 import Checkout from './pages/Checkout'
 import ProtectedRoute from './components/ProtectedRoute'
 import MyOrders from './pages/MyOrders'
+import Profile from './pages/Profile'
 import { Toaster } from 'react-hot-toast'
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Route path='/cart' element={<CartDrawer/>}/>
           <Route path='/checkout' element={<ProtectedRoute><Checkout/></ProtectedRoute>}/>
           <Route path='/orders' element={<ProtectedRoute><MyOrders/></ProtectedRoute>}/>
+          <Route path='/profile' element={<ProtectedRoute><Profile/></ProtectedRoute>}/>
           
           <Route path='/blog' element={<Blog/>}/>
         </Route>

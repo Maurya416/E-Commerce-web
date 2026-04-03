@@ -39,48 +39,48 @@ function MyOrders() {
     }
 
     return (
-        <div className="max-w-5xl mx-auto px-4 py-10">
-            <h1 className="text-3xl font-bold mb-8">My Orders</h1>
-            
+        <div className="max-w-5xl mx-auto px-4 py-10 flex flex-col items-center">
+            <h1 className="text-3xl font-bold mb-2 text-center">My Orders</h1>
+
             {orders.length === 0 ? (
-                <div className="text-center py-20 bg-gray-50 rounded-2xl">
+                <div className="w-full max-w-3xl mx-auto text-center py-20 bg-gray-50 rounded-2xl">
                     <Package className="h-16 w-16 mx-auto text-gray-300 mb-4" />
                     <p className="text-gray-500 text-lg">No orders yet.</p>
                 </div>
             ) : (
-                <div className="space-y-6">
+                <div className="w-full max-w-3xl mx-auto space-y-6">
                     {orders.map((order) => (
-                        <div key={order.id} className="bg-white border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition">
-                            <div className="bg-gray-50 px-6 py-4 flex flex-wrap justify-between items-center gap-4 border-b">
-                                <div className="flex gap-8">
-                                    <div>
+                        <div key={order.id} className="bg-white border border-gray-300 overflow-hidden shadow-sm hover:shadow-md transition w-full">
+                            <div className="bg-gray-50 px-4 py-3 flex items-center justify-between gap-3 border-b border-gray-300">
+                                <div className="flex items-center gap-4 min-w-0">
+                                    <div className="flex flex-col min-w-0">
                                         <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">Order Placed</p>
-                                        <p className="text-sm font-medium">{new Date(order.created_at).toLocaleDateString()}</p>
+                                        <p className="text-sm font-medium truncate">{new Date(order.created_at).toLocaleDateString()}</p>
                                     </div>
-                                    <div>
+                                    <div className="flex flex-col min-w-0">
                                         <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">Total</p>
                                         <p className="text-sm font-medium">₹{order.total_amount}</p>
                                     </div>
                                 </div>
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase font-bold tracking-wider text-right">Order #</p>
+                                <div className="text-right ml-2 shrink-0">
+                                    <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">Order #</p>
                                     <p className="text-sm font-medium">ORD-{order.id}</p>
                                 </div>
                             </div>
-                            
-                            <div className="px-6 py-6">
-                                <div className="flex items-center gap-2 mb-4">
+
+                            <div className="px-6 py-6 text-center md:text-left">
+                                <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
                                     {getStatusIcon(order.status)}
                                     <span className="font-semibold uppercase text-sm tracking-wide">{order.status || 'Processing'}</span>
                                 </div>
-                                
+
                                 <div className="space-y-4">
                                     {order.items?.map((item, idx) => (
-                                        <div key={idx} className="flex gap-4">
+                                        <div key={idx} className="flex gap-4 items-center border border-gray-300 rounded-lg">
                                             <div className="h-20 w-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                                                 <img src={item.image_url} alt={item.product_name} className="h-full w-full object-contain p-2" />
                                             </div>
-                                            <div className="flex-1">
+                                            <div className="flex-1 text-left">
                                                 <h4 className="font-medium text-gray-900">{item.product_name}</h4>
                                                 <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
                                                 <p className="text-sm font-bold mt-1">₹{item.price}</p>

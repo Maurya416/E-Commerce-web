@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Search, ShoppingCart, User, X, LogOut } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Search, ShoppingCart, User, X, LogOut, ChevronDown } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -9,6 +9,18 @@ function Header() {
   const { cartCount } = useCart();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setIsUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <header className="border-b border-slate-200 bg-white">
@@ -51,23 +63,50 @@ function Header() {
 
             {user ? (
               <div className="flex items-center gap-4">
-                <button
-                  onClick={() => navigate("/orders")}
-                  className="flex items-center gap-1.5 text-sm font-medium text-slate-700 hover:text-violet-700 sm:text-base cursor-pointer"
-                >
-                  <User className="h-5 w-5" />
-                  <span className="hidden sm:block">{user.full_name?.split(' ')[0]}</span>
-                </button>
-                <button
-                  onClick={() => {
-                    logout();
-                    navigate("/login");
-                  }}
-                  className="flex items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-800 sm:text-base cursor-pointer"
-                >
-                  <LogOut className="h-5 w-5" />
-                  <span className="hidden sm:block">Logout</span>
-                </button>
+                <div ref={userMenuRef} className="relative">
+                  <button
+                    onClick={() => setIsUserMenuOpen((p) => !p)}
+                    className="flex items-center gap-1.5 text-sm font-medium text-slate-700 hover:text-violet-700 sm:text-base cursor-pointer"
+                    aria-expanded={isUserMenuOpen}
+                  >
+                    <User className="h-5 w-5" />
+                    <span className="hidden sm:block">{user.full_name?.split(' ')[0]}</span>
+                    <ChevronDown className="h-4 w-4 text-slate-500" />
+                  </button>
+
+                  {isUserMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-44 rounded-lg border border-gray-300 bg-white shadow-lg z-50 overflow-hidden">
+                      <button
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          navigate("/profile");
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-[#7e21ff] hover:text-white cursor-pointer"
+                      >
+                        Profile
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          navigate("/orders");
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-[#7e21ff] hover:text-white cursor-pointer"
+                      >
+                        Order History
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          logout();
+                          navigate("/login");
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-300 cursor-pointer"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <button
