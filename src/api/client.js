@@ -10,7 +10,7 @@ const baseUrl = () => {
         return String(u).replace(/\/$/, '');
     }
     if (import.meta.env.DEV) {
-        return 'http://127.0.0.1:5000';
+        return 'https://2dmv5gbn-5000.inc1.devtunnels.ms';
     }
     return '';
 };
