@@ -35,10 +35,10 @@ export const AuthProvider = ({ children }) => {
         return data;
     };
 
-    const signup = async (fullName, email, password) => {
+    const signup = async (fullName, email, password, role = 'user') => {
         return await fetchApi('/api/auth/register', {
             method: 'POST',
-            body: { fullName, email, password }
+            body: { fullName, email, password, role }
         });
     };
 

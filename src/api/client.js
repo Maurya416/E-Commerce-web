@@ -1,16 +1,11 @@
-/**
- * Backend URL:
- * - Set VITE_API_URL in .env (e.g. http://127.0.0.1:5000) to override.
- * - If unset in dev, defaults to http://127.0.0.1:5000 (direct; backend must be running).
- * - Production build: leave unset only if API is same origin; else set VITE_API_URL.
- */
+
 const baseUrl = () => {
     const u = import.meta.env.VITE_API_URL;
     if (u != null && String(u).trim() !== '') {
         return String(u).replace(/\/$/, '');
     }
     if (import.meta.env.DEV) {
-        return 'https://2dmv5gbn-5000.inc1.devtunnels.ms';
+        return 'http://localhost:5000';
     }
     return '';
 };

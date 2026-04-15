@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const cartController = require('../controllers/cart.controller');
-const authMiddleware = require('../../../shared/auth.middleware');
+const { authMiddleware } = require('../../../shared/auth.middleware');
 
 router.use(authMiddleware);
 

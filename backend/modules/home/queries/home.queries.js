@@ -30,6 +30,7 @@ const HomeQueries = {
 
         const [topRows] = await pool.execute(`
             SELECT p.id, p.name, p.price, p.old_price AS oldPrice, p.rating, p.review_count AS reviews,
+                   p.slug,
                    ${firstImageSql} AS image
             FROM home_section_products h
             JOIN products p ON p.id = h.product_id
@@ -39,6 +40,7 @@ const HomeQueries = {
 
         const [essRows] = await pool.execute(`
             SELECT p.id, p.name, p.price, p.old_price AS oldPrice, p.rating, p.review_count,
+                   p.slug,
                    p.badge, p.is_doctor_choice AS doctorChoice,
                    ${firstImageSql} AS image
             FROM home_section_products h
@@ -49,6 +51,7 @@ const HomeQueries = {
 
         const [trendRows] = await pool.execute(`
             SELECT p.id, p.name, p.price, p.old_price AS oldPrice, p.review_count AS reviews,
+                   p.slug,
                    ${firstImageSql} AS image
             FROM home_section_products h
             JOIN products p ON p.id = h.product_id
@@ -62,7 +65,8 @@ const HomeQueries = {
             const [cRows] = await pool.execute(
                 `
                 SELECT p.id, p.name, p.price, p.old_price AS oldPrice, p.rating, p.review_count AS reviews,
-                       ${firstImageSql} AS image
+                      p.slug,
+                      ${firstImageSql} AS image
                 FROM concern_products cp
                 JOIN products p ON p.id = cp.product_id
                 WHERE cp.concern_id = ?

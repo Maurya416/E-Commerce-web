@@ -4,13 +4,14 @@ import { useCart } from '../context/CartContext'
 function ProductCard({ product }) {
 
   const { addToCart } = useCart();
-  const handleAddToCart = () => {
-        addToCart({
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.gallery?.[0] || product.image,
-        });
+    const handleAddToCart = (e) => {
+      if (e && e.stopPropagation) e.stopPropagation();
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.gallery?.[0] || product.image,
+      });
     };
 
   return (
@@ -27,7 +28,7 @@ function ProductCard({ product }) {
       {/* TITLE */}
       <div className="w-full min-w-0">
         <div className="min-h-[28px] w-full overflow-hidden">
-          <h3 className="break-words text-base font-semibold leading-6 text-slate-900 md:text-lg">
+          <h3 className="break-words text-normal font-bold leading-6 text-black md:text-sm">
             {product.name}
           </h3>
         </div>

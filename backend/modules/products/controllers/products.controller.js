@@ -92,11 +92,63 @@ const answerQuestion = async (req, res) => {
     }
 };
 
+const addProduct = async (req, res) => {
+    try {
+        const productData = req.body;
+        if (!productData.name || !productData.price || !productData.category_id) {
+            return errorResponse(res, 'Name, price, and category are required', 400);
+        }
+
+        // Generate slug
+        const slug = productData.name.toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)+/g, '') + '-' + Date.now();
+
+        const productId = await ProductQueries.createProduct({ ...productData, slug });
+        return successResponse(res, { id: productId, slug }, 'Product added successfully', 201);
+    } catch (err) {
+        return errorResponse(res, err.message);
+    }
+};
+
+const updateProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const productData = req.body;
+        
+        const success = await ProductQueries.updateProduct(id, productData);
+        if (!success) {
+            return errorResponse(res, 'Product not found or no changes made', 404);
+        }
+        
+        return successResponse(res, null, 'Product updated successfully');
+    } catch (err) {
+        return errorResponse(res, err.message);
+    }
+};
+
+const deleteProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const success = await ProductQueries.deleteProduct(id);
+        if (!success) {
+            return errorResponse(res, 'Product not found', 404);
+        }
+        
+        return successResponse(res, null, 'Product deleted successfully');
+    } catch (err) {
+        return errorResponse(res, err.message);
+    }
+};
+
 module.exports = {
     getAllProducts,
     getProductBySlug,
     getFeaturedProducts,
     addReview,
     addQuestion,
-    answerQuestion
+    answerQuestion,
+    addProduct,
+    updateProduct,
+    deleteProduct
 };

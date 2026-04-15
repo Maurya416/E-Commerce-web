@@ -30,8 +30,16 @@ const placeOrder = async (req, res) => {
 
 const getUserOrders = async (req, res) => {
     try {
+        const userRole = req.user.role;
         const userId = req.user.id;
-        const orders = await OrderQueries.getUserOrders(userId);
+        
+        let orders;
+        if (userRole === 'admin') {
+            orders = await OrderQueries.getAllOrders();
+        } else {
+            orders = await OrderQueries.getUserOrders(userId);
+        }
+        
         return successResponse(res, orders, 'Orders fetched successfully');
     } catch (err) {
         return errorResponse(res, err.message);

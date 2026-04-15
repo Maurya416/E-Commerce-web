@@ -15,6 +15,9 @@ const cartRoutes = require('./modules/cart/routes/cart.routes');
 const orderRoutes = require('./modules/orders/routes/orders.routes');
 const historyRoutes = require('./modules/history/routes/history.routes');
 const homeRoutes = require('./modules/home/routes/home.routes');
+const dashboardRoutes = require('./modules/dashboard/routes/dashboard.routes');
+const userRoutes = require('./modules/users/routes/user.routes');
+const blogRoutes = require('./modules/blogs/routes/blogs.routes');
 
 const app = express();
 const server = http.createServer(app);
@@ -37,6 +40,9 @@ app.use('/api/banners', bannerRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/history', historyRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/blogs', blogRoutes);
 
 // Health check
 app.get('/', (req, res) => {

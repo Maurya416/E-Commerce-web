@@ -56,6 +56,30 @@ const OrderQueries = {
             ORDER BY o.created_at DESC
         `, [userId]);
         return orders;
+    },
+
+    getAllOrders: async () => {
+        const [orders] = await pool.query(`
+            SELECT o.*, u.full_name as customer_name, u.email as customer_email,
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id', oi.id,
+                        'product_id', oi.product_id,
+                        'quantity', oi.quantity,
+                        'price', oi.price,
+                        'product_name', p.name,
+                        'image_url', pi.image_url
+                    )
+                ) as items
+            FROM orders o
+            JOIN users u ON o.user_id = u.id
+            JOIN order_items oi ON o.id = oi.order_id
+            JOIN products p ON oi.product_id = p.id
+            LEFT JOIN product_images pi ON p.id = pi.product_id
+            GROUP BY o.id, u.full_name, u.email
+            ORDER BY o.created_at DESC
+        `);
+        return orders;
     }
 };
 

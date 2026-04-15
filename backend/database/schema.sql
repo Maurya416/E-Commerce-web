@@ -218,3 +218,18 @@ CREATE TABLE IF NOT EXISTS order_history (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS blogs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    excerpt TEXT,
+    content LONGTEXT NOT NULL,
+    category VARCHAR(100) DEFAULT 'General',
+    status ENUM('draft', 'published', 'scheduled') DEFAULT 'draft',
+    image_url VARCHAR(512),
+    author VARCHAR(100) DEFAULT 'Admin',
+    tags JSON,
+    views INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

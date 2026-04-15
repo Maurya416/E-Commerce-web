@@ -1,10 +1,10 @@
 const pool = require('../../../config/db');
 
 const AuthQueries = {
-    registerUser: async (fullName, email, hashedPassword) => {
+    registerUser: async (fullName, email, hashedPassword, role = 'user') => {
         const [result] = await pool.execute(
-            'INSERT INTO users (full_name, email, password) VALUES (?, ?, ?)',
-            [fullName, email, hashedPassword]
+            'INSERT INTO users (full_name, email, password, role) VALUES (?, ?, ?, ?)',
+            [fullName, email, hashedPassword, role]
         );
         return result.insertId;
     },

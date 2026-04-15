@@ -4,7 +4,7 @@ const ProductQueries = {
     getAllProducts: async (filters = {}) => {
         let sql = `
             SELECT p.*, c.title AS category_name, b.name AS brand_name,
-            (SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.sort_order, pi.id LIMIT 1) AS card_image
+            (SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.sort_order, pi.id LIMIT 1) AS image
             FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
             LEFT JOIN brands b ON p.brand_id = b.id
@@ -179,7 +179,11 @@ const ProductQueries = {
     },
 
     getFeaturedProducts: async (limit = 10) => {
-        const [rows] = await pool.execute('SELECT * FROM products ORDER BY recently_in_carts DESC LIMIT ?', [limit]);
+        const [rows] = await pool.execute(`
+            SELECT p.*, (SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.sort_order, pi.id LIMIT 1) AS image
+            FROM products p 
+            ORDER BY p.recently_in_carts DESC LIMIT ?
+        `, [limit]);
         return rows;
     },
 
@@ -220,6 +224,70 @@ const ProductQueries = {
             'UPDATE product_questions SET answer = ? WHERE id = ?',
             [answer, questionId]
         );
+        return result.affectedRows > 0;
+    },
+
+    createProduct: async (productData) => {
+        const {
+            name, slug, price, old_price, save_percent, sku, quantity, 
+            status, image_url, category_id, brand_id, description 
+        } = productData;
+        
+        const [result] = await pool.execute(
+            `INSERT INTO products (
+                name, slug, price, old_price, save_percent, sku, quantity, 
+                status, category_id, brand_id, description
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [name, slug, price, old_price || null, save_percent || 0, sku, quantity || 0, 
+             status || 'Active', category_id, brand_id, description || '']
+        );
+        
+        const productId = result.insertId;
+        
+        if (image_url) {
+            await pool.execute(
+                'INSERT INTO product_images (product_id, image_url, sort_order) VALUES (?, ?, ?)',
+                [productId, image_url, 0]
+            );
+        }
+        
+        return productId;
+    },
+
+    updateProduct: async (id, productData) => {
+        const {
+            name, sku, price, quantity, status, image_url, category_id, brand_id
+        } = productData;
+        
+        const [result] = await pool.execute(
+            `UPDATE products SET 
+                name = ?, sku = ?, price = ?, quantity = ?, 
+                status = ?, category_id = ?, brand_id = ?
+            WHERE id = ?`,
+            [name, sku, price, quantity, status, category_id, brand_id, id]
+        );
+        
+        if (image_url) {
+            // Check if image exists
+            const [images] = await pool.execute('SELECT id FROM product_images WHERE product_id = ? LIMIT 1', [id]);
+            if (images.length > 0) {
+                await pool.execute(
+                    'UPDATE product_images SET image_url = ? WHERE product_id = ? AND id = ?',
+                    [image_url, id, images[0].id]
+                );
+            } else {
+                await pool.execute(
+                    'INSERT INTO product_images (product_id, image_url, sort_order) VALUES (?, ?, ?)',
+                    [id, image_url, 0]
+                );
+            }
+        }
+        
+        return result.affectedRows > 0;
+    },
+
+    deleteProduct: async (id) => {
+        const [result] = await pool.execute('DELETE FROM products WHERE id = ?', [id]);
         return result.affectedRows > 0;
     },
 };

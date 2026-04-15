@@ -1,74 +1,74 @@
-import { useEffect, useRef, useState } from 'react'
-import Button from '../components/Button'
-import ProductCard from '../components/ProductCard'
-import SectionTitle from '../components/SectionTitle'
-import { fetchApi } from '../api/client.js'
-import { ChevronLeft, ChevronRight, Plus, Minus } from 'lucide-react'
-import blogImg1 from '/src/assets/images/blogs/img1.avif'
-import blogImg2 from '/src/assets/images/blogs/img2.avif'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState } from "react";
+import Button from "../components/Button";
+import ProductCard from "../components/ProductCard";
+import SectionTitle from "../components/SectionTitle";
+import { fetchApi } from "../api/client.js";
+import { ChevronLeft, ChevronRight, Plus, Minus } from "lucide-react";
+import blogImg1 from "/src/assets/images/blogs/img1.avif";
+import blogImg2 from "/src/assets/images/blogs/img2.avif";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
 function Home() {
-  const [categories, setCategories] = useState([])
-  const [topSellers, setTopSellers] = useState([])
-  const [brands, setBrands] = useState([])
-  const [concernTabs, setConcernTabs] = useState([])
-  const [concernProducts, setConcernProducts] = useState({})
-  const [promoBanners, setPromoBanners] = useState([])
-  const [essentialsProducts, setEssentialsProducts] = useState([])
-  const [dualPromoBanners, setDualPromoBanners] = useState([])
-  const [trendingProducts, setTrendingProducts] = useState([])
-  const [homeLoading, setHomeLoading] = useState(true)
-  const [homeError, setHomeError] = useState(null)
+  const [categories, setCategories] = useState([]);
+  const [topSellers, setTopSellers] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [concernTabs, setConcernTabs] = useState([]);
+  const [concernProducts, setConcernProducts] = useState({});
+  const [promoBanners, setPromoBanners] = useState([]);
+  const [essentialsProducts, setEssentialsProducts] = useState([]);
+  const [dualPromoBanners, setDualPromoBanners] = useState([]);
+  const [trendingProducts, setTrendingProducts] = useState([]);
+  const [homeLoading, setHomeLoading] = useState(true);
+  const [homeError, setHomeError] = useState(null);
 
-  const [activeConcern, setActiveConcern] = useState('')
-  const [currentBanner, setCurrentBanner] = useState(0)
+  const [activeConcern, setActiveConcern] = useState("");
+  const [currentBanner, setCurrentBanner] = useState(0);
 
-  const [currentDualBanner, setCurrentDualBanner] = useState(0)
-  const [previousDualBanner, setPreviousDualBanner] = useState(0)
-  const [isTurning, setIsTurning] = useState(false)
-  const [turnDirection, setTurnDirection] = useState('next')
+  const [currentDualBanner, setCurrentDualBanner] = useState(0);
+  const [previousDualBanner, setPreviousDualBanner] = useState(0);
+  const [isTurning, setIsTurning] = useState(false);
+  const [turnDirection, setTurnDirection] = useState("next");
 
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
   useEffect(() => {
-    setHomeLoading(true)
-    setHomeError(null)
-    fetchApi('/api/home')
+    setHomeLoading(true);
+    setHomeError(null);
+    fetchApi("/api/home")
       .then((data) => {
-        setCategories(data.categories || [])
-        setTopSellers(data.topSellers || [])
-        setBrands(data.brands || [])
-        setConcernTabs(data.concernTabs || [])
-        setConcernProducts(data.concernProducts || {})
-        setPromoBanners(data.promoBanners || [])
-        setEssentialsProducts(data.essentialsProducts || [])
-        setDualPromoBanners(data.dualPromoBanners || [])
-        setTrendingProducts(data.trendingProducts || [])
-        const first = data.concernTabs?.[0]
-        if (first) setActiveConcern(first)
+        setCategories(data.categories || []);
+        setTopSellers(data.topSellers || []);
+        setBrands(data.brands || []);
+        setConcernTabs(data.concernTabs || []);
+        setConcernProducts(data.concernProducts || {});
+        setPromoBanners(data.promoBanners || []);
+        setEssentialsProducts(data.essentialsProducts || []);
+        setDualPromoBanners(data.dualPromoBanners || []);
+        setTrendingProducts(data.trendingProducts || []);
+        const first = data.concernTabs?.[0];
+        if (first) setActiveConcern(first);
       })
       .catch((err) => {
-        console.error('[Home] API /api/home failed:', err)
-        setHomeError(err.message || 'Backend se data nahi mila.')
+        console.error("[Home] API /api/home failed:", err);
+        setHomeError(err.message || "Backend se data nahi mila.");
       })
-      .finally(() => setHomeLoading(false))
-  }, [])
+      .finally(() => setHomeLoading(false));
+  }, []);
 
   const handleAddToCart = (item) => {
-    if (!item) return
+    if (!item) return;
     addToCart({
       id: item.id,
       name: item.name,
       price: item.price,
       image: item.gallery?.[0] || item.image,
-    })
-  }
-
+    });
+  };
 
   const brandRef = useRef(null);
+  const categoryRef = useRef(null);
 
   useEffect(() => {
     const container = brandRef.current;
@@ -98,118 +98,134 @@ function Home() {
   }, []);
 
   useEffect(() => {
-    if (promoBanners.length === 0) return
+    const container = categoryRef.current;
+
+    if (!container) return;
+
+    const interval = setInterval(() => {
+      if (
+        container.scrollLeft + container.clientWidth >=
+        container.scrollWidth
+      ) {
+        container.scrollTo({
+          left: 0,
+          behavior: "smooth",
+        });
+      } else {
+        container.scrollBy({
+          left: 200,
+          behavior: "smooth",
+        });
+      }
+    }, 2000); // 2 sec
+
+    return () => clearInterval(interval);
+  }, [categories.length]);
+
+  useEffect(() => {
+    if (promoBanners.length === 0) return;
     const interval = setInterval(() => {
       setCurrentBanner((prev) =>
-        prev === promoBanners.length - 1 ? 0 : prev + 1
-      )
-    }, 5000)
+        prev === promoBanners.length - 1 ? 0 : prev + 1,
+      );
+    }, 5000);
 
-    return () => clearInterval(interval)
-  }, [promoBanners.length])
-
+    return () => clearInterval(interval);
+  }, [promoBanners.length]);
 
   const handlePrevBanner = () => {
     setCurrentBanner((prev) =>
-      prev === 0 ? promoBanners.length - 1 : prev - 1
-    )
-  }
+      prev === 0 ? promoBanners.length - 1 : prev - 1,
+    );
+  };
 
   const handleNextBanner = () => {
     setCurrentBanner((prev) =>
-      prev === promoBanners.length - 1 ? 0 : prev + 1
-    )
-  }
-
-
+      prev === promoBanners.length - 1 ? 0 : prev + 1,
+    );
+  };
 
   useEffect(() => {
-    if (dualPromoBanners.length === 0) return
+    if (dualPromoBanners.length === 0) return;
     const interval = setInterval(() => {
       setCurrentDualBanner((prev) =>
-        prev === dualPromoBanners.length - 1 ? 0 : prev + 1
+        prev === dualPromoBanners.length - 1 ? 0 : prev + 1,
       );
     }, 2000);
 
     return () => clearInterval(interval);
   }, [dualPromoBanners.length]);
 
-
-
-  const trendingRef = useRef(null)
+  const trendingRef = useRef(null);
 
   const scrollTrendingLeft = () => {
     if (trendingRef.current) {
       trendingRef.current.scrollBy({
         left: -280,
-        behavior: 'smooth',
-      })
+        behavior: "smooth",
+      });
     }
-  }
+  };
 
   const scrollTrendingRight = () => {
     if (trendingRef.current) {
       trendingRef.current.scrollBy({
         left: 280,
-        behavior: 'smooth',
-      })
+        behavior: "smooth",
+      });
     }
-  }
+  };
 
-
-  const essentialsRef = useRef(null)
+  const essentialsRef = useRef(null);
 
   const scrollEssentialsRight = () => {
     if (essentialsRef.current) {
       essentialsRef.current.scrollBy({
         left: 260,
-        behavior: 'smooth',
-      })
+        behavior: "smooth",
+      });
     }
-  }
+  };
 
-
-  const brandRef1 = useRef(null)
+  const brandRef1 = useRef(null);
 
   const scrollBrandLeft = () => {
     if (brandRef1.current) {
       brandRef.current.scrollBy({
         left: -220,
-        behavior: 'smooth',
-      })
+        behavior: "smooth",
+      });
     }
-  }
+  };
 
   const scrollBrandRight = () => {
     if (brandRef1.current) {
       brandRef.current.scrollBy({
         left: 220,
-        behavior: 'smooth',
-      })
+        behavior: "smooth",
+      });
     }
-  }
+  };
 
-  const topSellerRef = useRef(null)
+  const topSellerRef = useRef(null);
 
   const scrollTopSellerLeft = () => {
     if (topSellerRef.current) {
       topSellerRef.current.scrollBy({
         left: -320,
-        behavior: 'smooth',
-      })
+        behavior: "smooth",
+      });
     }
-  }
+  };
 
   const scrollTopSellerRight = () => {
     if (topSellerRef.current) {
       topSellerRef.current.scrollBy({
         left: 320,
-        behavior: 'smooth',
-      })
+        behavior: "smooth",
+      });
     }
-  }
-
-
+  };
 
   const [openIndex, setOpenIndex] = useState(0);
 
@@ -242,10 +258,8 @@ function Home() {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-
-
   return (
-    <div className='bg-white'>
+    <div className="bg-white">
       {homeLoading && (
         <div className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm text-amber-900">
           Loading products…
@@ -253,11 +267,13 @@ function Home() {
       )}
       {homeError && (
         <div className="border-b border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-800">
-          <strong>Backend connect nahi ho paya.</strong> Pehle terminal me{' '}
-          <code className="rounded bg-red-100 px-1">cd backend</code> phir{' '}
-          <code className="rounded bg-red-100 px-1">node server.js</code> chalao (port 5000). MySQL +{' '}
-          <code className="rounded bg-red-100 px-1">schema.sql</code> +{' '}
-          <code className="rounded bg-red-100 px-1">seed.sql</code> run ho chuke hon. Error: {homeError}
+          <strong>Backend connect nahi ho paya.</strong> Pehle terminal me{" "}
+          <code className="rounded bg-red-100 px-1">cd backend</code> phir{" "}
+          <code className="rounded bg-red-100 px-1">node server.js</code> chalao
+          (port 5000). MySQL +{" "}
+          <code className="rounded bg-red-100 px-1">schema.sql</code> +{" "}
+          <code className="rounded bg-red-100 px-1">seed.sql</code> run ho chuke
+          hon. Error: {homeError}
         </div>
       )}
       {/* ===== HERO SECTION (FULL IMAGE BANNER) ===== */}
@@ -282,22 +298,25 @@ function Home() {
         <div className="px-4">
           <SectionTitle title="Shop by Category" />
 
-          {/* Desktop / Tablet Grid */}
-          <div className="hidden grid-cols-2 gap-4 pt-4 sm:grid sm:grid-cols-3 lg:grid-cols-6">
+          {/* Desktop / Tablet Horizontal Scroller */}
+          <div
+            ref={categoryRef}
+            className="hidden sm:flex gap-4 pt-4 overflow-x-auto scrollbar-hide"
+          >
             {categories.map((item, index) => (
               <div
                 key={`cat-${item.id}-${index}`}
                 onClick={() => navigate(`/collection?category=${item.id}`)}
-                className="cursor-pointer bg-white p-4 text-center"
+                className="min-w-[160px] flex-shrink-0 cursor-pointer bg-white p-4 text-center"
               >
-                <div className="mx-auto mb-4 flex h-30 items-center justify-center overflow-hidden p-3 border border-gray-300 rounded-lg">
+                <div className="mx-auto mb-4 flex h-29 items-center justify-center overflow-hidden">
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="h-32 object-contain"
+                    className="h-30 object-contain"
                   />
                 </div>
-                <h3 className="font-light text-gray-900 md:text-lg">
+                <h3 className="font-normal text-black md:text-md">
                   {item.title}
                 </h3>
               </div>
@@ -358,7 +377,8 @@ function Home() {
               {topSellers.map((product, index) => (
                 <div
                   key={`top-${product.id}-${index}`}
-                  className="min-w-[220px] sm:min-w-[240px] md:min-w-[250px] lg:min-w-[240px] xl:min-w-[245px] flex-shrink-0"
+                  onClick={() => product.slug && navigate(`/details/${product.slug}`)}
+                  className="min-w-[220px] sm:min-w-[240px] md:min-w-[250px] lg:min-w-[240px] xl:min-w-[245px] flex-shrink-0 cursor-pointer"
                 >
                   <ProductCard product={product} />
                 </div>
@@ -383,8 +403,10 @@ function Home() {
 
       {/* ===== BRAND SECTION ===== */}
       <section>
-        <div className="px-4 py-4 md:py-6
-        ">
+        <div
+          className="px-4 py-4 md:py-6
+        "
+        >
           <div>
             <SectionTitle title="Shop by Brands" />
           </div>
@@ -414,13 +436,11 @@ function Home() {
         </div>
       </section>
 
-
       {/* ===== CLINIKALLY ESSENTIALS SECTION ===== */}
       <section className="md:py-3">
         <div className="px-4">
           <div className="overflow-hidden rounded-lg bg-[#f3edf7] p-5 sm:p-6 lg:p-8">
             <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-6">
-
               {/* LEFT CONTENT */}
               <div className="flex flex-col justify-between">
                 <div>
@@ -428,7 +448,15 @@ function Home() {
                     Dermatologist-Formulated
                   </span>
 
-                  <h2 className="mt-6 max-w-[220px] md:text-3xl font-bold leading-tight text-[#0f172a] sm:text-4xl">
+                  <h2
+                    onClick={() => {
+                      const p = essentialsProducts && essentialsProducts[0];
+                      navigate(p?.slug ? `/details/${p.slug}` : '/details');
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    className="mt-6 max-w-[220px] md:text-3xl font-bold leading-tight text-[#0f172a] sm:text-4xl cursor-pointer"
+                  >
                     Shop Clinikally Essentials
                   </h2>
                 </div>
@@ -499,7 +527,8 @@ function Home() {
                       {/* BUTTON */}
                       <button
                         onClick={() => handleAddToCart(item)}
-                        className="mt-4 w-full rounded-lg border border-[#7c3aed] px-3 py-2 text-sm font-medium text-[#7c3aed] transition hover:bg-[#f7f2ff]">
+                        className="mt-4 w-full rounded-lg border border-[#7c3aed] px-3 py-2 text-sm font-medium text-[#7c3aed] transition hover:bg-[#f7f2ff]"
+                      >
                         Add To Cart
                       </button>
                     </div>
@@ -519,9 +548,6 @@ function Home() {
         </div>
       </section>
 
-
-
-
       {/* ===== CONCERN SECTION ===== */}
       <section className="py-12 md:py-3 px-4">
         <div className="p-10 rounded-lg bg-[#f0faf8]">
@@ -532,29 +558,30 @@ function Home() {
               <button
                 key={tab}
                 onClick={() => setActiveConcern(tab)}
-                className={`rounded-lg px-4 py-1 text-sm font-medium transition-all duration-300 ${activeConcern === tab
-                  ? ' text-[#8f6eeb] border border-[#8f6eeb]'
-                  : 'border border-gray-300 bg-white text-gray-700'
-                  }`}
+                className={`rounded-lg px-4 py-1 text-sm font-medium transition-all duration-300 ${
+                  activeConcern === tab
+                    ? " text-[#8f6eeb] border border-[#8f6eeb]"
+                    : "border border-gray-300 bg-white text-gray-700"
+                }`}
               >
                 {tab}
               </button>
             ))}
           </div>
 
-          <div className="grid gap-6 mt-4 sm:grid-cols-2 lg:grid-cols-4 px-3 py-3 rounded-lg bg-white">
+            <div className="grid gap-6 mt-4 sm:grid-cols-2 lg:grid-cols-4 px-3 py-3 rounded-lg bg-white">
             {(concernProducts[activeConcern] || []).map((product, index) => (
-              <ProductCard
+              <div
                 key={`concern-${product.id}-${index}`}
-                product={product}
-              />
+                onClick={() => product.slug && navigate(`/details/${product.slug}`)}
+                className="cursor-pointer"
+              >
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
         </div>
       </section>
-
-
-
 
       {/* ===== DUAL PROMO BANNER SLIDER ===== */}
       <section>
@@ -575,7 +602,6 @@ function Home() {
           </div>
         </div>
       </section>
-
 
       {/* ===== TRENDING PRODUCTS ===== */}
       <section>
@@ -609,7 +635,8 @@ function Home() {
               {trendingProducts.map((product, index) => (
                 <div
                   key={`trend-${product.id}-${index}`}
-                  className="w-[240px] min-w-[240px] max-w-[240px] flex-shrink-0"
+                  onClick={() => product.slug && navigate(`/details/${product.slug}`)}
+                  className="w-[240px] min-w-[240px] max-w-[240px] flex-shrink-0 cursor-pointer"
                 >
                   <div className="flex h-full w-full min-w-0 flex-col">
                     {/* IMAGE */}
@@ -630,8 +657,12 @@ function Home() {
 
                     {/* RATING */}
                     <div className="mt-1 flex flex-wrap items-center gap-2 text-[15px]">
-                      <span className="tracking-[1px] text-[#f4c20d]">★★★★☆</span>
-                      <span className="text-[#6b7280]">({product.reviews} Reviews)</span>
+                      <span className="tracking-[1px] text-[#f4c20d]">
+                        ★★★★☆
+                      </span>
+                      <span className="text-[#6b7280]">
+                        ({product.reviews} Reviews)
+                      </span>
                     </div>
 
                     {/* PRICE */}
@@ -651,7 +682,7 @@ function Home() {
                     <div className="mt-1">
                       <Button
                         variant="outline"
-                        onClick={() => handleAddToCart(product)}
+                        onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
                         className="w-full rounded-lg border-[#8b3dff] py-3 text-[16px] font-medium text-[#8b3dff] hover:bg-[#faf5ff]"
                       >
                         Add to Cart
@@ -664,8 +695,6 @@ function Home() {
           </div>
         </div>
       </section>
-
-
 
       <section className="w-full py-10 md:py-5">
         <div className="px-4 sm:px-6 lg:px-8">
@@ -700,10 +729,7 @@ function Home() {
                   const isOpen = openIndex === index;
 
                   return (
-                    <div
-                      key={index}
-                      className="border-b border-[#d8d8d8] py-5 md:py-5"
-                    >
+                    <div key={index} className="border-b border-[#d8d8d8] py-5 md:py-5">
                       <button
                         type="button"
                         onClick={() => toggleAccordion(index)}
@@ -747,8 +773,6 @@ function Home() {
         </div>
       </section>
 
-
-
       {/* ===== FROM THE DOCTOR'S DESK ===== */}
       <section className="py-10">
         <div className=" px-8">
@@ -766,9 +790,10 @@ function Home() {
             {/* LEFT BIG CARDS */}
             <div className="grid gap-6 md:grid-cols-2">
               {/* CARD 1 */}
-              <article 
-              onClick={() => navigate("/blog")}
-              className="overflow-hidden rounded-lg border border-[#e5e7eb] bg-white">
+              <article
+                onClick={() => navigate("/blog")}
+                className="overflow-hidden rounded-lg border border-[#e5e7eb] bg-white"
+              >
                 <div className="h-[200px] w-full overflow-hidden">
                   <img
                     src={blogImg1}
@@ -798,9 +823,10 @@ function Home() {
               </article>
 
               {/* CARD 2 */}
-              <article 
-              onClick={() => navigate("/blog")}
-              className="overflow-hidden rounded-lg border border-[#e5e7eb] bg-white">
+              <article
+                onClick={() => navigate("/blog")}
+                className="overflow-hidden rounded-lg border border-[#e5e7eb] bg-white"
+              >
                 <div className="h-[200px] w-full overflow-hidden">
                   <img
                     src={blogImg2}
@@ -819,8 +845,8 @@ function Home() {
                   </h3>
 
                   <p className="mt-3 text-[17px] text-[#8b95a7]">
-                    You require a breath of fresh air in your daily routine to refresh
-                    and unleash the.
+                    You require a breath of fresh air in your daily routine to
+                    refresh and unleash the.
                   </p>
 
                   <button className="mt-6 rounded-lg border border-[#8b3dff] px-6 py-3 text-[16px] font-medium text-[#8b3dff] transition hover:bg-[#faf5ff]">
@@ -835,37 +861,39 @@ function Home() {
               {/* ITEM 1 */}
               <article className="border-b border-[#e5e7eb] pb-6">
                 <h3 className="text-lg font-normal text-black">
-                  Understanding Haircare Labels: A Complete Guide to Healthy Hair
+                  Understanding Haircare Labels: A Complete Guide to Healthy
+                  Hair
                 </h3>
 
                 <p className="mt-3 text-[17px] leading-[1.7] text-[#8b95a7]">
-                  Reading hair care ingredient labels can be daunting, particularly
-                  with the current t...
+                  Reading hair care ingredient labels can be daunting,
+                  particularly with the current t...
                 </p>
               </article>
 
               {/* ITEM 2 */}
               <article className="border-b border-[#e5e7eb] py-6">
                 <h3 className="text-lg font-normal text-black">
-                  Gluten vs Gluten-Free Foods: A Complete Guide to Skin, Hair, and
-                  Wellness
+                  Gluten vs Gluten-Free Foods: A Complete Guide to Skin, Hair,
+                  and Wellness
                 </h3>
 
                 <p className="mt-3 text-[17px] leading-[1.7] text-[#8b95a7]">
-                  Gluten is a protein found in some cereals, including wheat, rye, and
-                  barley. It help...
+                  Gluten is a protein found in some cereals, including wheat,
+                  rye, and barley. It help...
                 </p>
               </article>
 
               {/* ITEM 3 */}
               <article className="border-b border-[#e5e7eb] py-6">
                 <h3 className="text-lg font-normal text-black">
-                  Why India is Shifting to Online Dermatologist Consultations in 2026
+                  Why India is Shifting to Online Dermatologist Consultations in
+                  2026
                 </h3>
 
                 <p className="mt-3 text-[17px] leading-[1.7] text-[#8b95a7]">
-                  While skincare trends keep evolving, so do the habits of skincare
-                  users. 2026 is see...
+                  While skincare trends keep evolving, so do the habits of
+                  skincare users. 2026 is see...
                 </p>
               </article>
             </div>
@@ -873,9 +901,7 @@ function Home() {
         </div>
       </section>
     </div>
-  )
+  );
 }
 
-
-
-export default Home
+export default Home;

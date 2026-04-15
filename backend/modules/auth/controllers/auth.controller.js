@@ -5,7 +5,7 @@ const { successResponse, errorResponse } = require('../../../shared/response.uti
 
 const register = async (req, res) => {
     try {
-        const { fullName, email, password } = req.body;
+        const { fullName, email, password, role } = req.body;
 
         if (!fullName || !email || !password) {
             return errorResponse(res, 'All fields are required', 400);
@@ -17,7 +17,7 @@ const register = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const userId = await AuthQueries.registerUser(fullName, email, hashedPassword);
+        const userId = await AuthQueries.registerUser(fullName, email, hashedPassword, role);
 
         return successResponse(res, { userId }, 'User registered successfully', 201);
     } catch (err) {

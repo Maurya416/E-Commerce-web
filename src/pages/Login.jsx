@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, User, ShieldCheck } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
@@ -8,11 +8,12 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("user");
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
 
   const from = location.state?.from?.pathname || "/";
 
@@ -24,9 +25,22 @@ function Login() {
 
     try {
       setIsSubmitting(true);
-      await login(email, password);
+      const data = await login(email, password);
+      
+      // Strict role validation
+      if (data.user.role !== role) {
+        logout();
+        toast.error(`Unauthorized: This account is not authorized for the ${role} portal.`);
+        return;
+      }
+
       toast.success("Login successful!");
-      navigate(from, { replace: true });
+      
+      if (data.user.role === 'admin') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       toast.error(err.message || "Invalid credentials");
     } finally {
@@ -56,8 +70,38 @@ function Login() {
           Login to continue your skincare journey
         </p>
 
+        {/* ROLE SELECTION (Tab Switcher) */}
+        <div className="mt-8 space-y-2 px-4">
+          <div className="flex p-1 bg-gray-100 rounded-xl">
+            <button
+              type="button"
+              onClick={() => setRole("user")}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                role === "user"
+                  ? "bg-white text-[#8b3dff] shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <User className="h-4 w-4" />
+              Customer
+            </button>
+            <button
+              type="button"
+              onClick={() => setRole("admin")}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                role === "admin"
+                  ? "bg-white text-[#6d28d9] shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <ShieldCheck className="h-4 w-4" />
+              Administrator
+            </button>
+          </div>
+        </div>
+
         {/* FORM */}
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4 px-4">
           {/* EMAIL */}
           <div>
             <label className="text-sm font-medium text-gray-700">
@@ -145,4 +189,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Login;
